@@ -11,7 +11,7 @@ Read more about Kiota [here](https://github.com/microsoft/kiota/blob/main/README
 ## Using the Kiota Json Serialization Library
 
 ```shell
-dotnet add package Microsoft.Kiota.Serialization.Json
+dotnet add package Microsoft.Kiota.Serialization.Json --prerelease
 ```
 
 ## Debugging
