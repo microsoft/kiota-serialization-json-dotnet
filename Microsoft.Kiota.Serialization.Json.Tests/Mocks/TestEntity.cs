@@ -35,17 +35,17 @@ namespace Microsoft.Kiota.Serialization.Json.Tests.Mocks
         /// <summary>
         /// The deserialization information for the current model
         /// </summary>
-        public IDictionary<string, Action<T, IParseNode>> GetFieldDeserializers<T>()
+        public IDictionary<string, Action<IParseNode>> GetFieldDeserializers()
         {
-            return new Dictionary<string, Action<T, IParseNode>> {
-                {"id", (o,n) => { (o as TestEntity).Id = n.GetStringValue(); } },
-                {"numbers", (o,n) => { (o as TestEntity).Numbers = n.GetEnumValue<TestEnum>(); } },
-                {"createdDateTime", (o,n) => { (o as TestEntity).CreatedDateTime = n.GetDateTimeOffsetValue(); } },
-                {"officeLocation", (o,n) => { (o as TestEntity).OfficeLocation = n.GetStringValue(); } },
-                {"workDuration", (o,n) => { (o as TestEntity).WorkDuration = n.GetTimeSpanValue(); } },
-                {"birthDay", (o,n) => { (o as TestEntity).BirthDay = n.GetDateValue(); } },
-                {"startWorkTime", (o,n) => { (o as TestEntity).StartWorkTime = n.GetTimeValue(); } },
-                {"endWorkTime", (o,n) => { (o as TestEntity).EndWorkTime = n.GetTimeValue(); } },
+            return new Dictionary<string, Action<IParseNode>> {
+                {"id", n => { Id = n.GetStringValue(); } },
+                {"numbers", n => { Numbers = n.GetEnumValue<TestEnum>(); } },
+                {"createdDateTime", n => { CreatedDateTime = n.GetDateTimeOffsetValue(); } },
+                {"officeLocation", n => { OfficeLocation = n.GetStringValue(); } },
+                {"workDuration", n => { WorkDuration = n.GetTimeSpanValue(); } },
+                {"birthDay", n => { BirthDay = n.GetDateValue(); } },
+                {"startWorkTime", n => { StartWorkTime = n.GetTimeValue(); } },
+                {"endWorkTime", n => { EndWorkTime = n.GetTimeValue(); } },
             };
         }
         /// <summary>
