@@ -14,7 +14,7 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <Deterministic>true</Deterministic>
     <VersionPrefix>1.0.0</VersionPrefix>
-    <VersionSuffix>preview.2</VersionSuffix>
+    <VersionSuffix>preview.3</VersionSuffix>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Enable this line once we go live to prevent breaking changes -->
@@ -23,7 +23,7 @@
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
     <PackageReleaseNotes>
-        - Breaking: simplifies the field deserializers.
+        - Fixes handling of JsonElement types in additionalData during serialization.
     </PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>

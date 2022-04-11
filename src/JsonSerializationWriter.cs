@@ -399,6 +399,10 @@ namespace Microsoft.Kiota.Serialization.Json
                 case Time time:
                     WriteTimeValue(key, time);
                     break;
+                case JsonElement jsonElement:
+                    if(!string.IsNullOrEmpty(key)) writer.WritePropertyName(key);
+                    jsonElement.WriteTo(writer);
+                    break;
                 case object o:
                     WriteNonParsableObjectValue(key, o);
                     break;
