@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Serialization.Json.Tests.Mocks;
 using Xunit;
@@ -50,6 +51,54 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
                                  "\"createdDateTime\":\"0001-01-01T00:00:00+00:00\"," +
                                  "\"businessPhones\":[\"\\u002B1 412 555 0109\"]," +
                                  "\"manager\":{\"id\":\"48d31887-5fad-4d73-a9f5-3c356e68a038\"}"+
+                                 "}";
+            Assert.Equal(expectedString, serializedJsonString);
+        }
+
+        [Fact]
+        public void WritesSampleObjectValueWithJsonElementAdditionalData()
+        {
+            var nullJsonElement = JsonDocument.Parse("null").RootElement;
+            var arrayJsonElement = JsonDocument.Parse("[\"+1 412 555 0109\"]").RootElement;
+            var objectJsonElement = JsonDocument.Parse("{\"id\":\"48d31887-5fad-4d73-a9f5-3c356e68a038\"}").RootElement;
+
+            // Arrange
+            var testEntity = new TestEntity()
+            {
+                Id = "48d31887-5fad-4d73-a9f5-3c356e68a038",
+                WorkDuration = TimeSpan.FromHours(1),
+                StartWorkTime = new Time(8, 0, 0),
+                BirthDay = new Date(2017, 9, 4),
+                AdditionalData = new Dictionary<string, object>
+                {
+                    {"mobilePhone", nullJsonElement}, // write null value
+                    {"accountEnabled",false}, // write bool value
+                    {"jobTitle","Author"}, // write string value
+                    {"createdDateTime", DateTimeOffset.MinValue}, // write date value
+                    {"businessPhones", arrayJsonElement }, // write collection of primitives value
+                    {"manager", objectJsonElement }, // write nested object value
+                }
+            };
+            using var jsonSerializerWriter = new JsonSerializationWriter();
+            // Act
+            jsonSerializerWriter.WriteObjectValue(string.Empty, testEntity);
+            // Get the json string from the stream.
+            var serializedStream = jsonSerializerWriter.GetSerializedContent();
+            using var reader = new StreamReader(serializedStream, Encoding.UTF8);
+            var serializedJsonString = reader.ReadToEnd();
+
+            // Assert
+            var expectedString = "{" +
+                                 "\"id\":\"48d31887-5fad-4d73-a9f5-3c356e68a038\"," +
+                                 "\"workDuration\":\"PT1H\"," +    // Serializes timespans
+                                 "\"birthDay\":\"2017-09-04\"," + // Serializes dates
+                                 "\"startWorkTime\":\"08:00:00\"," + //Serializes times
+                                 "\"mobilePhone\":null," +
+                                 "\"accountEnabled\":false," +
+                                 "\"jobTitle\":\"Author\"," +
+                                 "\"createdDateTime\":\"0001-01-01T00:00:00+00:00\"," +
+                                 "\"businessPhones\":[\"\\u002B1 412 555 0109\"]," +
+                                 "\"manager\":{\"id\":\"48d31887-5fad-4d73-a9f5-3c356e68a038\"}" +
                                  "}";
             Assert.Equal(expectedString, serializedJsonString);
         }
