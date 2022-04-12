@@ -11,6 +11,7 @@ using System.Text.Json;
 using Microsoft.Kiota.Abstractions.Serialization;
 using Microsoft.Kiota.Abstractions;
 using System.Xml;
+using Microsoft.Kiota.Abstractions.Extensions;
 
 namespace Microsoft.Kiota.Serialization.Json
 {
