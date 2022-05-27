@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [1.0.0-preview.6] - 2022-05-27
+
+### Changed
+
+- Fixes a bug where JsonParseNode.GetChildNode would throw an exception if the property name did not exist in the json.
+
 ## [1.0.0-preview.5] - 2022-05-18
 
 ### Changed
