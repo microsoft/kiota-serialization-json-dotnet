@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 //  Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 // ------------------------------------------------------------------------------
 
@@ -94,7 +94,7 @@ namespace Microsoft.Kiota.Serialization.Json
         /// Get the <see cref="DateTimeOffset"/> value from the json node
         /// </summary>
         /// <returns>A <see cref="DateTimeOffset"/> value</returns>
-        public DateTimeOffset? GetDateTimeOffsetValue() 
+        public DateTimeOffset? GetDateTimeOffsetValue()
         {
             // JsonElement.GetDateTimeOffset is super strict so try to be more lenient if it fails(e.g. when we have whitespace or other variant formats).
             // ref - https://docs.microsoft.com/en-us/dotnet/standard/datetime/system-text-json-support
@@ -366,10 +366,18 @@ namespace Microsoft.Kiota.Serialization.Json
         /// </summary>
         /// <param name="identifier">The identifier of the child node</param>
         /// <returns>An instance of <see cref="IParseNode"/></returns>
-        public IParseNode GetChildNode(string identifier) => new JsonParseNode(_jsonNode.GetProperty(identifier ?? throw new ArgumentNullException(nameof(identifier))))
+        public IParseNode GetChildNode(string identifier)
         {
-            OnBeforeAssignFieldValues = OnBeforeAssignFieldValues,
-            OnAfterAssignFieldValues = OnAfterAssignFieldValues
-        };
+            if(_jsonNode.TryGetProperty(identifier ?? throw new ArgumentNullException(nameof(identifier)), out var jsonElement)) 
+            {
+                return new JsonParseNode(jsonElement)
+                {
+                    OnBeforeAssignFieldValues = OnBeforeAssignFieldValues,
+                    OnAfterAssignFieldValues = OnAfterAssignFieldValues
+                };
+            }
+
+            return default;
+        }
     }
 }

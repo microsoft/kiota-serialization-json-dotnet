@@ -85,5 +85,17 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             Assert.NotEmpty(phonesList);
             Assert.Equal("+1 412 555 0109", phonesList[0]);
         }
+
+        [Fact]
+        public void ReturnsDefaultIfChildNodeDoesNotExist()
+        {
+            // Arrange
+            using var jsonDocument = JsonDocument.Parse(TestUserJson);
+            var rootParseNode = new JsonParseNode(jsonDocument.RootElement);
+            // Try to get an imaginary node value
+            var imaginaryNode = rootParseNode.GetChildNode("imaginaryNode");
+            // Assert
+            Assert.Null(imaginaryNode);
+        }
     }
 }
