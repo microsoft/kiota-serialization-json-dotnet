@@ -22,5 +22,16 @@ public class UnionTypeMock : IUnionWrapper, IParsable
     }
     public string DeserializationHint { get; set; }
     public IDictionary<string, Action<IParseNode>> GetFieldDeserializers() => throw new NotImplementedException();
-    public void Serialize(ISerializationWriter writer) => throw new NotImplementedException();
+    public void Serialize(ISerializationWriter writer) {
+        _ = writer ?? throw new ArgumentNullException(nameof(writer));
+        if (ComposedType1 != null) {
+            writer.WriteObjectValue(null, ComposedType1);
+        }
+        else if (ComposedType2 != null) {
+            writer.WriteObjectValue(null, ComposedType2);
+        }
+        else if (!string.IsNullOrEmpty(StringValue)) {
+            writer.WriteStringValue(null, StringValue);
+        }
+    }
 }
