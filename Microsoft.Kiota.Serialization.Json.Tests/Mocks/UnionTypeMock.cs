@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Kiota.Abstractions.Serialization;
 
 namespace Microsoft.Kiota.Serialization.Json.Tests.Mocks;
@@ -9,6 +10,7 @@ public class UnionTypeMock : IUnionWrapper, IParsable
     public TestEntity ComposedType1 { get; set; }
     public SecondTestEntity ComposedType2 { get; set; }
     public string StringValue { get; set; }
+    public List<TestEntity> ComposedType3 { get; set; }
     public static UnionTypeMock CreateFromDiscriminator(IParseNode parseNode) {
         var result = new UnionTypeMock();
         var discriminator = parseNode.GetChildNode("@odata.type")?.GetStringValue();
@@ -20,6 +22,8 @@ public class UnionTypeMock : IUnionWrapper, IParsable
         }
         else if (parseNode.GetStringValue() is string stringValue) {
             result.StringValue = stringValue;
+        } else if (parseNode.GetCollectionOfObjectValues<TestEntity>(TestEntity.CreateFromDiscriminator) is IEnumerable<TestEntity> values && values.Any()) {
+            result.ComposedType3 = values.ToList();
         }
         return result;
     }
@@ -28,7 +32,7 @@ public class UnionTypeMock : IUnionWrapper, IParsable
             return ComposedType1.GetFieldDeserializers();
         else if (ComposedType2 != null)
             return ComposedType2.GetFieldDeserializers();
-        else
+        else //composed type3 is omitted on purpose
             return new Dictionary<string, Action<IParseNode>>();
     }
     public void Serialize(ISerializationWriter writer) {
@@ -38,8 +42,9 @@ public class UnionTypeMock : IUnionWrapper, IParsable
         }
         else if (ComposedType2 != null) {
             writer.WriteObjectValue(null, ComposedType2);
-        }
-        else if (!string.IsNullOrEmpty(StringValue)) {
+        } else if (ComposedType3 != null) {
+            writer.WriteCollectionOfObjectValues(null, ComposedType3);
+        } else if (!string.IsNullOrEmpty(StringValue)) {
             writer.WriteStringValue(null, StringValue);
         }
     }

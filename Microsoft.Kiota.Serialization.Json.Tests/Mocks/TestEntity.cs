@@ -65,5 +65,8 @@ namespace Microsoft.Kiota.Serialization.Json.Tests.Mocks
             writer.WriteTimeValue("endWorkTime", EndWorkTime);
             writer.WriteAdditionalData(AdditionalData);
         }
+        public static TestEntity CreateFromDiscriminator(IParseNode parseNode) {
+            return new TestEntity();
+        }
     }
 }
