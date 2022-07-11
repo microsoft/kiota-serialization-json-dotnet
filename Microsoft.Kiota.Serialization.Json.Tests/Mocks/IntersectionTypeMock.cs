@@ -13,16 +13,15 @@ public class IntersectionTypeMock : IIntersectionWrapper, IParsable
         var result = new IntersectionTypeMock();
         result.ComposedType1 = new();
         result.ComposedType2 = new();
-        result.DeserializationHint = $"{nameof(ComposedType1)};{nameof(ComposedType2)};";
         if (parseNode.GetStringValue() is string stringValue) {
             result.StringValue = stringValue;
-            result.DeserializationHint = "kiota-deserialization-done";
+            result.DeserializationHint = "scalar";
         }
         return result;
     }
     public string DeserializationHint { get; set; }
     public IDictionary<string, Action<IParseNode>> GetFieldDeserializers() {
-        return ParseNodeHelper.MergeDeserializersForIntersectionWrapper(ComposedType1, ComposedType2);
+        return ParseNodeHelper.MergeDeserializersForIntersectionWrapper(DeserializationHint, ComposedType1, ComposedType2);
     }
     public void Serialize(ISerializationWriter writer) {
         _ = writer ?? throw new ArgumentNullException(nameof(writer));

@@ -22,7 +22,6 @@ public class UnionTypeMock : IUnionWrapper, IParsable
         }
         else if (parseNode.GetStringValue() is string stringValue) {
             result.StringValue = stringValue;
-            result.DeserializationHint = "kiota-deserialization-done";
         }
         return result;
     }

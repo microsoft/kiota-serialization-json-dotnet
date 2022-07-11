@@ -289,16 +289,12 @@ namespace Microsoft.Kiota.Serialization.Json
         public T GetObjectValue<T>(ParsableFactory<T> factory) where T : IParsable
         {
             var item = factory(this);
-            var fieldDeserializers = item switch {
-                IComposedWrapper wrapper when "kiota-deserialization-done".Equals(wrapper.DeserializationHint) => new Dictionary<string, Action<IParseNode>>(),
-                _ => item.GetFieldDeserializers(),
-            };
             OnBeforeAssignFieldValues?.Invoke(item);
-            AssignFieldValues(item, fieldDeserializers);
+            AssignFieldValues(item);
             OnAfterAssignFieldValues?.Invoke(item);
             return item;
         }
-        private void AssignFieldValues<T>(T item, IDictionary<string, Action<IParseNode>> fieldDeserializers) where T : IParsable
+        private void AssignFieldValues<T>(T item) where T : IParsable
         {
             if(_jsonNode.ValueKind != JsonValueKind.Object) return;
             IDictionary<string, object> itemAdditionalData = null;
@@ -308,6 +304,7 @@ namespace Microsoft.Kiota.Serialization.Json
                     holder.AdditionalData = new Dictionary<string, object>();
                 itemAdditionalData = holder.AdditionalData;
             }
+            var fieldDeserializers = item.GetFieldDeserializers();
 
             foreach(var fieldValue in _jsonNode.EnumerateObject())
             {

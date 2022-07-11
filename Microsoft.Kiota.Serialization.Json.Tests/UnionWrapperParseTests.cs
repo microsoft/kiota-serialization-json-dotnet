@@ -26,7 +26,7 @@ public class UnionWrapperParseTests {
         Assert.Null(result.StringValue);
         Assert.StartsWith("ComposedType1", result.DeserializationHint);
         Assert.DoesNotContain("ComposedType2", result.DeserializationHint);
-        Assert.DoesNotContain("kiota-deserialization-done", result.DeserializationHint);
+        Assert.DoesNotContain("scalar", result.DeserializationHint);
         Assert.Equal("opaque", result.ComposedType1.Id);
     }
     [Fact]
@@ -46,7 +46,7 @@ public class UnionWrapperParseTests {
         Assert.Null(result.StringValue);
         Assert.StartsWith("ComposedType2", result.DeserializationHint);
         Assert.DoesNotContain("ComposedType1", result.DeserializationHint);
-        Assert.DoesNotContain("kiota-deserialization-done", result.DeserializationHint);
+        Assert.DoesNotContain("scalar", result.DeserializationHint);
         Assert.Equal(10, result.ComposedType2.Id);
     }
     [Fact]
@@ -66,7 +66,7 @@ public class UnionWrapperParseTests {
         Assert.Equal("officeLocation", result.StringValue);
         Assert.DoesNotContain("ComposedType1", result.DeserializationHint);
         Assert.DoesNotContain("ComposedType2", result.DeserializationHint);
-        Assert.StartsWith("kiota-deserialization-done", result.DeserializationHint);
+        Assert.Null(result.DeserializationHint);
     }
     [Fact]
     public void SerializesIntersectionTypeStringValue()
