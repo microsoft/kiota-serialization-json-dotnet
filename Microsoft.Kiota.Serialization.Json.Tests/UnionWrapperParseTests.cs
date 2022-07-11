@@ -7,6 +7,7 @@ namespace Microsoft.Kiota.Serialization.Json.Tests;
 
 public class UnionWrapperParseTests {
     private readonly JsonParseNodeFactory _parseNodeFactory = new();
+    private readonly JsonSerializationWriterFactory _serializationWriterFactory = new();
     private const string contentType = "application/json";
     [Fact]
     public void ParsesUnionTypeComplexProperty1()
@@ -65,5 +66,68 @@ public class UnionWrapperParseTests {
         Assert.DoesNotContain("ComposedType1", result.DeserializationHint);
         Assert.DoesNotContain("ComposedType2", result.DeserializationHint);
         Assert.StartsWith("kiota-deserialization-done", result.DeserializationHint);
+    }
+    [Fact]
+    public void SerializesUnionTypeStringValue()
+    {
+        // Given
+        using var writer = _serializationWriterFactory.GetSerializationWriter(contentType);
+        var model = new UnionTypeMock {
+            StringValue = "officeLocation"
+        };
+    
+        // When
+        model.Serialize(writer);
+        using var resultStream = writer.GetSerializedContent();
+        using var streamReader = new StreamReader(resultStream);
+        var result = streamReader.ReadToEnd();
+    
+        // Then
+        Assert.Equal("\"officeLocation\"", result);
+    }
+    [Fact]
+    public void SerializesUnionTypeComplexProperty1()
+    {
+        // Given
+        using var writer = _serializationWriterFactory.GetSerializationWriter(contentType);
+        var model = new UnionTypeMock {
+            ComposedType1 = new() {
+                Id = "opaque",
+                OfficeLocation = "Montreal",
+            },
+            ComposedType2 = new() {
+                DisplayName = "McGill",
+            },
+        };
+    
+        // When
+        model.Serialize(writer);
+        using var resultStream = writer.GetSerializedContent();
+        using var streamReader = new StreamReader(resultStream);
+        var result = streamReader.ReadToEnd();
+    
+        // Then
+        Assert.Equal("{\"id\":\"opaque\",\"officeLocation\":\"Montreal\"}", result);
+    }
+    [Fact]
+    public void SerializesUnionTypeComplexProperty2()
+    {
+        // Given
+        using var writer = _serializationWriterFactory.GetSerializationWriter(contentType);
+        var model = new UnionTypeMock {
+            ComposedType2 = new() {
+                DisplayName = "McGill",
+                Id = 10,
+            },
+        };
+    
+        // When
+        model.Serialize(writer);
+        using var resultStream = writer.GetSerializedContent();
+        using var streamReader = new StreamReader(resultStream);
+        var result = streamReader.ReadToEnd();
+    
+        // Then
+        Assert.Equal("{\"displayName\":\"McGill\",\"id\":10}", result);
     }
 }
