@@ -24,7 +24,6 @@ public class IntersectionWrapperParseTests {
         Assert.NotNull(result.ComposedType1);
         Assert.NotNull(result.ComposedType2);
         Assert.Null(result.StringValue);
-        Assert.Null(result.DeserializationHint);
         Assert.Equal("opaque", result.ComposedType1.Id);
         Assert.Equal("McGill", result.ComposedType2.DisplayName);
     }
@@ -43,7 +42,6 @@ public class IntersectionWrapperParseTests {
         Assert.NotNull(result.ComposedType1);
         Assert.NotNull(result.ComposedType2);
         Assert.Null(result.StringValue);
-        Assert.Null(result.DeserializationHint);
         Assert.Null(result.ComposedType1.Id);
         Assert.Null(result.ComposedType2.Id); // it's expected to be null since we have conflicting properties here and the parser will only try one to avoid having to brute its way through
         Assert.Equal("McGill", result.ComposedType2.DisplayName);
@@ -63,9 +61,6 @@ public class IntersectionWrapperParseTests {
         Assert.NotNull(result.ComposedType2);
         Assert.NotNull(result.ComposedType1);
         Assert.Equal("officeLocation", result.StringValue);
-        Assert.DoesNotContain("ComposedType1", result.DeserializationHint);
-        Assert.DoesNotContain("ComposedType2", result.DeserializationHint);
-        Assert.StartsWith("scalar", result.DeserializationHint);
     }
     [Fact]
     public void SerializesIntersectionTypeStringValue()

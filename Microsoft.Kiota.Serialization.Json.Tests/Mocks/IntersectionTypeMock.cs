@@ -15,13 +15,15 @@ public class IntersectionTypeMock : IIntersectionWrapper, IParsable
         result.ComposedType2 = new();
         if (parseNode.GetStringValue() is string stringValue) {
             result.StringValue = stringValue;
-            result.DeserializationHint = "scalar";
         }
         return result;
     }
-    public string DeserializationHint { get; set; }
     public IDictionary<string, Action<IParseNode>> GetFieldDeserializers() {
-        return ParseNodeHelper.MergeDeserializersForIntersectionWrapper(DeserializationHint, ComposedType1, ComposedType2);
+        if(!string.IsNullOrEmpty(StringValue)) {
+            return new Dictionary<string, Action<IParseNode>>();
+        } else {
+            return ParseNodeHelper.MergeDeserializersForIntersectionWrapper(ComposedType1, ComposedType2);
+        }
     }
     public void Serialize(ISerializationWriter writer) {
         _ = writer ?? throw new ArgumentNullException(nameof(writer));
