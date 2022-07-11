@@ -290,8 +290,8 @@ namespace Microsoft.Kiota.Serialization.Json
         {
             var item = factory(this);
             var fieldDeserializers = item switch {
-                IIntersectionWrapper intersectionWrapper => GetFieldDeserializersForIntersectionWrapper(intersectionWrapper),
                 IUnionWrapper unionWrapper => GetFieldDeserializersForUnionWrapper(unionWrapper),
+                IIntersectionWrapper intersectionWrapper => GetFieldDeserializersForIntersectionWrapper(intersectionWrapper),
                 _ => item.GetFieldDeserializers(),
             };
             OnBeforeAssignFieldValues?.Invoke(item);
@@ -306,27 +306,27 @@ namespace Microsoft.Kiota.Serialization.Json
                 return Array.Empty<string>();
             return composedWrapper.DeserializationHint.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
         }
-        private IDictionary<string, Action<IParseNode>> GetFieldDeserializersForUnionWrapper(IUnionWrapper unionWrapper) {
-            var splitHint = GetParsedDeserializationHintForComposedWrapper(unionWrapper);
+        private IDictionary<string, Action<IParseNode>> GetFieldDeserializersForIntersectionWrapper(IIntersectionWrapper wrapper) {
+            var splitHint = GetParsedDeserializationHintForComposedWrapper(wrapper);
 
             if(!splitHint.Any())
                 return new Dictionary<string, Action<IParseNode>>();
             
-            return splitHint.SelectMany(x => GetFieldDeserializersForProperty(unionWrapper, x))
+            return splitHint.SelectMany(x => GetFieldDeserializersForProperty(wrapper, x))
                             .GroupBy(static x => x.Key)
                             .Select(static x => x.First())
                             .ToDictionary(static x => x.Key, static x => x.Value);
         }
-        private IDictionary<string, Action<IParseNode>> GetFieldDeserializersForIntersectionWrapper(IIntersectionWrapper intersectionWrapper)
+        private IDictionary<string, Action<IParseNode>> GetFieldDeserializersForUnionWrapper(IUnionWrapper wrapper)
         {
-            var splitHint = GetParsedDeserializationHintForComposedWrapper(intersectionWrapper);
+            var splitHint = GetParsedDeserializationHintForComposedWrapper(wrapper);
 
             if(!splitHint.Any())
                 return new Dictionary<string, Action<IParseNode>>();
             if(splitHint.Length > 1)
                 throw new InvalidOperationException("DeserializationHint contains more than one hint value which is invalid for intersection wrapper");
             var fieldDeserializers = new Dictionary<string, Action<IParseNode>>();
-            return GetFieldDeserializersForProperty(intersectionWrapper, splitHint.First());
+            return GetFieldDeserializersForProperty(wrapper, splitHint.First());
         }
         private IDictionary<string, Action<IParseNode>> GetFieldDeserializersForProperty(IComposedWrapper composedWrapper, string propertyName) {
             var property = composedWrapper.GetType().GetProperty(propertyName);
