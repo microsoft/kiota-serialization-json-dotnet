@@ -11,10 +11,11 @@ public class IntersectionTypeMock : IIntersectionWrapper, IParsable
     public string StringValue { get; set; }
     public static IntersectionTypeMock CreateFromDiscriminator(IParseNode parseNode) {
         var result = new IntersectionTypeMock();
-        result.ComposedType1 = new();
-        result.ComposedType2 = new();
         if (parseNode.GetStringValue() is string stringValue) {
             result.StringValue = stringValue;
+        } else {
+            result.ComposedType1 = new();
+            result.ComposedType2 = new();
         }
         return result;
     }
