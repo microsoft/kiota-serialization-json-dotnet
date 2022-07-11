@@ -14,11 +14,11 @@ public class UnionTypeMock : IUnionWrapper, IParsable
         var discriminator = parseNode.GetChildNode("@odata.type")?.GetStringValue();
         if("#microsoft.graph.testEntity".Equals(discriminator)) {
             result.ComposedType1 = new();
-            result.DeserializationHint = "ComposedType1";
+            result.DeserializationHint = nameof(ComposedType1);
         }
         else if("#microsoft.graph.secondTestEntity".Equals(discriminator)) {
             result.ComposedType2 = new();
-            result.DeserializationHint = "ComposedType2";
+            result.DeserializationHint = nameof(ComposedType2);
         }
         else if (parseNode.GetStringValue() is string stringValue) {
             result.StringValue = stringValue;
@@ -27,6 +27,17 @@ public class UnionTypeMock : IUnionWrapper, IParsable
         return result;
     }
     public string DeserializationHint { get; set; }
-    public IDictionary<string, Action<IParseNode>> GetFieldDeserializers() => throw new NotImplementedException();
-    public void Serialize(ISerializationWriter writer) => throw new NotImplementedException();
+    public IDictionary<string, Action<IParseNode>> GetFieldDeserializers() => throw new NotImplementedException(); //TODO we could switch on the hint here for complex properties
+    public void Serialize(ISerializationWriter writer) {
+        _ = writer ?? throw new ArgumentNullException(nameof(writer));
+        if (ComposedType1 != null) {
+            writer.WriteObjectValue(null, ComposedType1);
+        }
+        else if (ComposedType2 != null) {
+            writer.WriteObjectValue(null, ComposedType2);
+        }
+        else if (!string.IsNullOrEmpty(StringValue)) {
+            writer.WriteStringValue(null, StringValue);
+        }
+    }
 }

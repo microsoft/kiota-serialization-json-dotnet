@@ -107,7 +107,7 @@ public class IntersectionWrapperParseTests {
         var result = streamReader.ReadToEnd();
     
         // Then
-        Assert.Equal("{\"id\":\"opaque\",\"officeLocation\":\"Montreal\"}", result);
+        Assert.Equal("{\"id\":\"opaque\",\"officeLocation\":\"Montreal\",\"displayName\":\"McGill\"}", result);
     }
     [Fact]
     public void SerializesIntersectionTypeComplexProperty2()
