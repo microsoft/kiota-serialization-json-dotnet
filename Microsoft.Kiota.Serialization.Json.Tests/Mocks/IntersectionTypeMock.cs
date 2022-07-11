@@ -13,7 +13,7 @@ public class IntersectionTypeMock : IIntersectionWrapper, IParsable
         var result = new IntersectionTypeMock();
         result.ComposedType1 = new();
         result.ComposedType2 = new();
-        result.DeserializationHint = "ComposedType1;ComposedType2;";
+        result.DeserializationHint = $"{nameof(ComposedType1)};{nameof(ComposedType2)};";
         if (parseNode.GetStringValue() is string stringValue) {
             result.StringValue = stringValue;
             result.DeserializationHint = "kiota-deserialization-done";
@@ -21,17 +21,13 @@ public class IntersectionTypeMock : IIntersectionWrapper, IParsable
         return result;
     }
     public string DeserializationHint { get; set; }
-    public IDictionary<string, Action<IParseNode>> GetFieldDeserializers() => throw new NotImplementedException();
+    public IDictionary<string, Action<IParseNode>> GetFieldDeserializers() => throw new NotImplementedException(); //TODO move deserialization work here
     public void Serialize(ISerializationWriter writer) {
         _ = writer ?? throw new ArgumentNullException(nameof(writer));
-        if (ComposedType1 != null) {
-            writer.WriteObjectValue(null, ComposedType1);
-        }
-        else if (ComposedType2 != null) {
-            writer.WriteObjectValue(null, ComposedType2);
-        }
-        else if (!string.IsNullOrEmpty(StringValue)) {
+        if (!string.IsNullOrEmpty(StringValue)) {
             writer.WriteStringValue(null, StringValue);
+        } else {
+            writer.WriteObjectValue(null, ComposedType1, ComposedType2);
         }
     }
 }
