@@ -27,7 +27,14 @@ public class UnionTypeMock : IUnionWrapper, IParsable
         return result;
     }
     public string DeserializationHint { get; set; }
-    public IDictionary<string, Action<IParseNode>> GetFieldDeserializers() => throw new NotImplementedException(); //TODO we could switch on the hint here for complex properties
+    public IDictionary<string, Action<IParseNode>> GetFieldDeserializers() {
+        if (nameof(ComposedType1).Equals(DeserializationHint, StringComparison.OrdinalIgnoreCase))
+            return ComposedType1.GetFieldDeserializers();
+        else if (nameof(ComposedType2).Equals(DeserializationHint, StringComparison.OrdinalIgnoreCase))
+            return ComposedType2.GetFieldDeserializers();
+        else
+            return new Dictionary<string, Action<IParseNode>>();
+    }
     public void Serialize(ISerializationWriter writer) {
         _ = writer ?? throw new ArgumentNullException(nameof(writer));
         if (ComposedType1 != null) {

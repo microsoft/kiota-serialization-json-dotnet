@@ -21,7 +21,9 @@ public class IntersectionTypeMock : IIntersectionWrapper, IParsable
         return result;
     }
     public string DeserializationHint { get; set; }
-    public IDictionary<string, Action<IParseNode>> GetFieldDeserializers() => throw new NotImplementedException(); //TODO move deserialization work here
+    public IDictionary<string, Action<IParseNode>> GetFieldDeserializers() {
+        return ParseNodeHelper.MergeDeserializersForIntersectionWrapper(ComposedType1, ComposedType2);
+    }
     public void Serialize(ISerializationWriter writer) {
         _ = writer ?? throw new ArgumentNullException(nameof(writer));
         if (!string.IsNullOrEmpty(StringValue)) {
