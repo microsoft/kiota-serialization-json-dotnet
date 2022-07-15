@@ -32,8 +32,8 @@ public class UnionTypeMock : IUnionWrapper, IParsable
             return ComposedType1.GetFieldDeserializers();
         else if (ComposedType2 != null)
             return ComposedType2.GetFieldDeserializers();
-        else //composed type3 is omitted on purpose
-            return new Dictionary<string, Action<IParseNode>>();
+        //composed type3 is omitted on purpose
+        return new Dictionary<string, Action<IParseNode>>();
     }
     public void Serialize(ISerializationWriter writer) {
         _ = writer ?? throw new ArgumentNullException(nameof(writer));
