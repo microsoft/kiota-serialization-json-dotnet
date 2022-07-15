@@ -313,17 +313,27 @@ namespace Microsoft.Kiota.Serialization.Json
         /// </summary>
         /// <param name="key">The key of the json node</param>
         /// <param name="value">The object instance to write</param>
-        public void WriteObjectValue<T>(string key, T value) where T : IParsable
+        /// <param name="additionalValuesToMerge">The additional values to merge to the main value when serializing an intersection wrapper.</param>
+        public void WriteObjectValue<T>(string key, T value, params IParsable[] additionalValuesToMerge) where T : IParsable
         {
-            if(value != null)
+            if(value != null || additionalValuesToMerge.Any(static x => x != null))
             {
                 if(!string.IsNullOrEmpty(key)) writer.WritePropertyName(key);
-                OnBeforeObjectSerialization?.Invoke(value);
+                if(value != null) OnBeforeObjectSerialization?.Invoke(value);
                 writer.WriteStartObject();
-                OnStartObjectSerialization?.Invoke(value, this);
-                value.Serialize(this);
+                if(value != null) {
+                    OnStartObjectSerialization?.Invoke(value, this);
+                    value.Serialize(this);
+                }
+                foreach(var additionalValueToMerge in additionalValuesToMerge)
+                {
+                    OnBeforeObjectSerialization?.Invoke(additionalValueToMerge);
+                    OnStartObjectSerialization?.Invoke(additionalValueToMerge, this);
+                    additionalValueToMerge.Serialize(this);
+                    OnAfterObjectSerialization?.Invoke(additionalValueToMerge);
+                }
                 writer.WriteEndObject();
-                OnAfterObjectSerialization?.Invoke(value);
+                if(value != null) OnAfterObjectSerialization?.Invoke(value);
             }
         }
 
