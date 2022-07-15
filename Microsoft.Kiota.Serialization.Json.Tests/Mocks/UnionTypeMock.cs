@@ -5,7 +5,7 @@ using Microsoft.Kiota.Abstractions.Serialization;
 
 namespace Microsoft.Kiota.Serialization.Json.Tests.Mocks;
 
-public class UnionTypeMock : IUnionWrapper, IParsable
+public class UnionTypeMock : IParsable
 {
     public TestEntity ComposedType1 { get; set; }
     public SecondTestEntity ComposedType2 { get; set; }

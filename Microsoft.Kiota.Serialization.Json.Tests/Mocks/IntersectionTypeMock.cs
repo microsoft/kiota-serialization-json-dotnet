@@ -5,7 +5,7 @@ using Microsoft.Kiota.Abstractions.Serialization;
 
 namespace Microsoft.Kiota.Serialization.Json.Tests.Mocks;
 
-public class IntersectionTypeMock : IIntersectionWrapper, IParsable
+public class IntersectionTypeMock : IParsable
 {
     public TestEntity ComposedType1 { get; set; }
     public SecondTestEntity ComposedType2 { get; set; }
