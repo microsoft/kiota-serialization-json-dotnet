@@ -24,11 +24,10 @@ public class IntersectionTypeMock : IIntersectionWrapper, IParsable
         return result;
     }
     public IDictionary<string, Action<IParseNode>> GetFieldDeserializers() {
-        if(!string.IsNullOrEmpty(StringValue) || ComposedType3 != null) {
-            return new Dictionary<string, Action<IParseNode>>();
-        } else {
+        if(ComposedType1 != null || ComposedType1 != null) {
             return ParseNodeHelper.MergeDeserializersForIntersectionWrapper(ComposedType1, ComposedType2);
         }
+        return new Dictionary<string, Action<IParseNode>>();
     }
     public void Serialize(ISerializationWriter writer) {
         _ = writer ?? throw new ArgumentNullException(nameof(writer));
