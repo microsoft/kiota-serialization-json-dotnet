@@ -14,7 +14,7 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <Deterministic>true</Deterministic>
     <VersionPrefix>1.0.0</VersionPrefix>
-    <VersionSuffix>preview.6</VersionSuffix>
+    <VersionSuffix>preview.7</VersionSuffix>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Enable this line once we go live to prevent breaking changes -->
@@ -23,7 +23,7 @@
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
     <PackageReleaseNotes>
-        - Fixes bug where JsonParseNode.GetChildNode would throw an exception if the property name did not exist in the json.
+        - Adds support for composed types serialization.
     </PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -31,7 +31,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.0.0-preview.10" />
+    <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.0.0-preview.11" />
     <PackageReference Include="System.Text.Json" Version="6.0.5" />
   </ItemGroup>
 
