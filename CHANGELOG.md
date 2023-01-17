@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [1.0.0-rc.2] - 2023-01-17
+
+### Changed
+
+- Adds support for nullable reference types
+
 ## [1.0.0-rc.1] - 2022-12-15
 
 ### Changed

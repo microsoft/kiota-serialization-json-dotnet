@@ -34,7 +34,7 @@ namespace Microsoft.Kiota.Serialization.Json
         /// Get the string value from the json node
         /// </summary>
         /// <returns>A string value</returns>
-        public string GetStringValue() => _jsonNode.ValueKind == JsonValueKind.String ? _jsonNode.GetString() : null;
+        public string? GetStringValue() => _jsonNode.ValueKind == JsonValueKind.String ? _jsonNode.GetString() : null;
 
         /// <summary>
         /// Get the boolean value from the json node
@@ -99,7 +99,7 @@ namespace Microsoft.Kiota.Serialization.Json
             // JsonElement.GetDateTimeOffset is super strict so try to be more lenient if it fails(e.g. when we have whitespace or other variant formats).
             // ref - https://docs.microsoft.com/en-us/dotnet/standard/datetime/system-text-json-support
             if(!_jsonNode.TryGetDateTimeOffset(out var value))
-                value = DateTimeOffset.Parse(_jsonNode.GetString());
+                value = DateTimeOffset.Parse(_jsonNode.GetString()!);
 
             return value;
         }
@@ -154,11 +154,11 @@ namespace Microsoft.Kiota.Serialization.Json
             if(string.IsNullOrEmpty(rawValue)) return null;
             if(typeof(T).GetCustomAttributes<FlagsAttribute>().Any())
             {
-                return (T)(object)rawValue
+                return (T)(object)rawValue!
                     .Split(',')
                     .Select(x => Enum.TryParse<T>(x, true, out var result) ? result : (T?)null)
                     .Where(x => !x.Equals(null))
-                    .Select(x => (int)(object)x)
+                    .Select(x => (int)(object)x!)
                     .Sum();
             }
             else
@@ -208,23 +208,23 @@ namespace Microsoft.Kiota.Serialization.Json
         /// Gets the byte array value of the node.
         /// </summary>
         /// <returns>The byte array value of the node.</returns>
-        public byte[] GetByteArrayValue() {
+        public byte[]? GetByteArrayValue() {
             var rawValue = _jsonNode.GetString();
             if(string.IsNullOrEmpty(rawValue)) return null;
             return Convert.FromBase64String(rawValue);
         }
-        private static Type booleanType = typeof(bool?);
-        private static Type byteType = typeof(byte?);
-        private static Type sbyteType = typeof(sbyte?);
-        private static Type stringType = typeof(string);
-        private static Type intType = typeof(int?);
-        private static Type floatType = typeof(float?);
-        private static Type doubleType = typeof(double?);
-        private static Type guidType = typeof(Guid?);
-        private static Type dateTimeOffsetType = typeof(DateTimeOffset?);
-        private static Type timeSpanType = typeof(TimeSpan?);
-        private static Type dateType = typeof(Date?);
-        private static Type timeType = typeof(Time?);
+        private static readonly Type booleanType = typeof(bool?);
+        private static readonly Type byteType = typeof(byte?);
+        private static readonly Type sbyteType = typeof(sbyte?);
+        private static readonly Type stringType = typeof(string);
+        private static readonly Type intType = typeof(int?);
+        private static readonly Type floatType = typeof(float?);
+        private static readonly Type doubleType = typeof(double?);
+        private static readonly Type guidType = typeof(Guid?);
+        private static readonly Type dateTimeOffsetType = typeof(DateTimeOffset?);
+        private static readonly Type timeSpanType = typeof(TimeSpan?);
+        private static readonly Type dateType = typeof(Date?);
+        private static readonly Type timeType = typeof(Time?);
 
         /// <summary>
         /// Get the collection of primitives of type <typeparam name="T"/>from the json node
@@ -242,29 +242,29 @@ namespace Microsoft.Kiota.Serialization.Json
                         OnAfterAssignFieldValues = OnAfterAssignFieldValues
                     };
                     if(genericType == booleanType)
-                        yield return (T)(object)currentParseNode.GetBoolValue();
+                        yield return (T)(object)currentParseNode.GetBoolValue()!;
                     else if(genericType == byteType)
-                        yield return (T)(object)currentParseNode.GetByteValue();
+                        yield return (T)(object)currentParseNode.GetByteValue()!;
                     else if(genericType == sbyteType)
-                        yield return (T)(object)currentParseNode.GetSbyteValue();
+                        yield return (T)(object)currentParseNode.GetSbyteValue()!;
                     else if(genericType == stringType)
-                        yield return (T)(object)currentParseNode.GetStringValue();
+                        yield return (T)(object)currentParseNode.GetStringValue()!;
                     else if(genericType == intType)
-                        yield return (T)(object)currentParseNode.GetIntValue();
+                        yield return (T)(object)currentParseNode.GetIntValue()!;
                     else if(genericType == floatType)
-                        yield return (T)(object)currentParseNode.GetFloatValue();
+                        yield return (T)(object)currentParseNode.GetFloatValue()!;
                     else if(genericType == doubleType)
-                        yield return (T)(object)currentParseNode.GetDoubleValue();
+                        yield return (T)(object)currentParseNode.GetDoubleValue()!;
                     else if(genericType == guidType)
-                        yield return (T)(object)currentParseNode.GetGuidValue();
+                        yield return (T)(object)currentParseNode.GetGuidValue()!;
                     else if(genericType == dateTimeOffsetType)
-                        yield return (T)(object)currentParseNode.GetDateTimeOffsetValue();
+                        yield return (T)(object)currentParseNode.GetDateTimeOffsetValue()!;
                     else if(genericType == timeSpanType)
-                        yield return (T)(object)currentParseNode.GetTimeSpanValue();
+                        yield return (T)(object)currentParseNode.GetTimeSpanValue()!;
                     else if(genericType == dateType)
-                        yield return (T)(object)currentParseNode.GetDateValue();
+                        yield return (T)(object)currentParseNode.GetDateValue()!;
                     else if(genericType == timeType)
-                        yield return (T)(object)currentParseNode.GetTimeValue();
+                        yield return (T)(object)currentParseNode.GetTimeValue()!;
                     else
                         throw new InvalidOperationException($"unknown type for deserialization {genericType.FullName}");
                 }
@@ -274,12 +274,12 @@ namespace Microsoft.Kiota.Serialization.Json
         /// <summary>
         /// The action to perform before assigning field values.
         /// </summary>
-        public Action<IParsable> OnBeforeAssignFieldValues { get; set; }
+        public Action<IParsable>? OnBeforeAssignFieldValues { get; set; }
 
         /// <summary>
         /// The action to perform after assigning field values.
         /// </summary>
-        public Action<IParsable> OnAfterAssignFieldValues { get; set; }
+        public Action<IParsable>? OnAfterAssignFieldValues { get; set; }
 
         /// <summary>
         /// Get the object of type <typeparam name="T"/>from the json node
@@ -297,11 +297,10 @@ namespace Microsoft.Kiota.Serialization.Json
         private void AssignFieldValues<T>(T item) where T : IParsable
         {
             if(_jsonNode.ValueKind != JsonValueKind.Object) return;
-            IDictionary<string, object> itemAdditionalData = null;
+            IDictionary<string, object>? itemAdditionalData = null;
             if(item is IAdditionalDataHolder holder)
             {
-                if(holder.AdditionalData == null)
-                    holder.AdditionalData = new Dictionary<string, object>();
+                holder.AdditionalData ??= new Dictionary<string, object>();
                 itemAdditionalData = holder.AdditionalData;
             }
             var fieldDeserializers = item.GetFieldDeserializers();
@@ -324,7 +323,7 @@ namespace Microsoft.Kiota.Serialization.Json
                 else if (itemAdditionalData != null)
                 {
                     Debug.WriteLine($"found additional property {fieldValue.Name} to deserialize");
-                    itemAdditionalData.TryAdd(fieldValue.Name, TryGetAnything(fieldValue.Value));
+                    IDictionaryExtensions.TryAdd(itemAdditionalData, fieldValue.Name, TryGetAnything(fieldValue.Value)!);
                 }
                 else
                 {
@@ -332,7 +331,7 @@ namespace Microsoft.Kiota.Serialization.Json
                 }
             }
         }
-        private object TryGetAnything(JsonElement element)
+        private static object? TryGetAnything(JsonElement element)
         {
             switch(element.ValueKind)
             {
@@ -372,7 +371,7 @@ namespace Microsoft.Kiota.Serialization.Json
         /// </summary>
         /// <param name="identifier">The identifier of the child node</param>
         /// <returns>An instance of <see cref="IParseNode"/></returns>
-        public IParseNode GetChildNode(string identifier)
+        public IParseNode? GetChildNode(string identifier)
         {
             if(_jsonNode.ValueKind == JsonValueKind.Object && _jsonNode.TryGetProperty(identifier ?? throw new ArgumentNullException(nameof(identifier)), out var jsonElement)) 
             {
