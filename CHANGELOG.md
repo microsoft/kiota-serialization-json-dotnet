@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [1.0.0-rc.3] - 2023-01-27
+
+### Changed
+
+- Relaxed nullability tolerance when merging objects for composed types.
+
 ## [1.0.0-rc.2] - 2023-01-17
 
 ### Changed

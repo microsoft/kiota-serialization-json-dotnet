@@ -14,7 +14,7 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <Deterministic>true</Deterministic>
     <VersionPrefix>1.0.0</VersionPrefix>
-    <VersionSuffix>rc.2</VersionSuffix>
+    <VersionSuffix>rc.3</VersionSuffix>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Enable this line once we go live to prevent breaking changes -->
@@ -35,7 +35,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.0.0-rc.5" />
+    <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.0.0-rc.6" />
     <PackageReference Include="System.Text.Json" Version="7.0.1" />
   </ItemGroup>
 
