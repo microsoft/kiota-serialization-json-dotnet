@@ -314,7 +314,7 @@ namespace Microsoft.Kiota.Serialization.Json
         /// <param name="key">The key of the json node</param>
         /// <param name="value">The object instance to write</param>
         /// <param name="additionalValuesToMerge">The additional values to merge to the main value when serializing an intersection wrapper.</param>
-        public void WriteObjectValue<T>(string? key, T? value, params IParsable[] additionalValuesToMerge) where T : IParsable
+        public void WriteObjectValue<T>(string? key, T? value, params IParsable?[] additionalValuesToMerge) where T : IParsable
         {
             if(value != null || additionalValuesToMerge.Any(static x => x != null))
             {
@@ -325,11 +325,11 @@ namespace Microsoft.Kiota.Serialization.Json
                     OnStartObjectSerialization?.Invoke(value, this);
                     value.Serialize(this);
                 }
-                foreach(var additionalValueToMerge in additionalValuesToMerge)
+                foreach(var additionalValueToMerge in additionalValuesToMerge.Where(static x => x != null))
                 {
-                    OnBeforeObjectSerialization?.Invoke(additionalValueToMerge);
-                    OnStartObjectSerialization?.Invoke(additionalValueToMerge, this);
-                    additionalValueToMerge.Serialize(this);
+                    OnBeforeObjectSerialization?.Invoke(additionalValueToMerge!);
+                    OnStartObjectSerialization?.Invoke(additionalValueToMerge!, this);
+                    additionalValueToMerge!.Serialize(this);
                     OnAfterObjectSerialization?.Invoke(additionalValueToMerge);
                 }
                 writer.WriteEndObject();
