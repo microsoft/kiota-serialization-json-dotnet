@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [1.0.3] - 2023-03-15
+
+### Changed
+
+- Fixes serialization of DateTime type in the additionalData
+
 ## [1.0.2] - 2023-03-10
 
 ### Changed
