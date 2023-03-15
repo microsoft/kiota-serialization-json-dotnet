@@ -406,6 +406,9 @@ namespace Microsoft.Kiota.Serialization.Json
                 case Date date:
                     WriteDateValue(key, date);
                     break;
+                case DateTime dateTime:
+                    WriteDateTimeOffsetValue(key, new DateTimeOffset(dateTime));
+                    break;
                 case Time time:
                     WriteTimeValue(key, time);
                     break;

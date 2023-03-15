@@ -28,6 +28,7 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
                     {"jobTitle","Author"}, // write string value
                     {"createdDateTime", DateTimeOffset.MinValue}, // write date value
                     {"businessPhones", new List<string>() {"+1 412 555 0109"}}, // write collection of primitives value
+                    {"endDateTime", new DateTime(2023,03,14,0,0,0,DateTimeKind.Utc) }, // ensure the DateTime doesn't crash
                     {"manager", new TestEntity{Id = "48d31887-5fad-4d73-a9f5-3c356e68a038"}}, // write nested object value
                 }
             };
@@ -50,7 +51,8 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
                                  "\"jobTitle\":\"Author\"," +
                                  "\"createdDateTime\":\"0001-01-01T00:00:00+00:00\"," +
                                  "\"businessPhones\":[\"\\u002B1 412 555 0109\"]," +
-                                 "\"manager\":{\"id\":\"48d31887-5fad-4d73-a9f5-3c356e68a038\"}"+
+                                 "\"endDateTime\":\"2023-03-14T00:00:00+00:00\"," +
+                                 "\"manager\":{\"id\":\"48d31887-5fad-4d73-a9f5-3c356e68a038\"}" +
                                  "}";
             Assert.Equal(expectedString, serializedJsonString);
         }
