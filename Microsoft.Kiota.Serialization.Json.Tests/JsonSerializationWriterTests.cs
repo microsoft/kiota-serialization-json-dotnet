@@ -113,6 +113,7 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             {
                 Id = "48d31887-5fad-4d73-a9f5-3c356e68a038",
                 Numbers = TestEnum.One | TestEnum.Two,
+                TestNamingEnum = TestNamingEnum.Item2SubItem1,
                 AdditionalData = new Dictionary<string, object>
                 {
                     {"mobilePhone",null}, // write null value
@@ -136,6 +137,7 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             var expectedString = "[{" +
                                  "\"id\":\"48d31887-5fad-4d73-a9f5-3c356e68a038\"," +
                                  "\"numbers\":\"one,two\"," +
+                                 "\"testNamingEnum\":\"item2:SubItem1\"," +
                                  "\"mobilePhone\":null," +
                                  "\"accountEnabled\":false," +
                                  "\"jobTitle\":\"Author\"," +
