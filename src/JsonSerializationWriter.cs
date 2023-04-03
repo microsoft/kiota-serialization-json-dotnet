@@ -9,6 +9,7 @@ using System.Text.Json;
 using Microsoft.Kiota.Abstractions.Serialization;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.Serialization;
 using Microsoft.Kiota.Abstractions.Extensions;
 using Microsoft.Kiota.Abstractions;
 using System.Xml;
@@ -241,10 +242,10 @@ namespace Microsoft.Kiota.Serialization.Json
                     writer.WriteStringValue(Enum.GetValues(typeof(T))
                                             .Cast<T>()
                                             .Where(x => value.Value.HasFlag(x))
-                                            .Select(x => Enum.GetName(typeof(T),x))
+                                            .Select(GetEnumName)
                                             .Select(x => x.ToFirstCharacterLowerCase())
                                             .Aggregate((x, y) => $"{x},{y}"));
-                else writer.WriteStringValue(value.Value.ToString().ToFirstCharacterLowerCase());
+                else writer.WriteStringValue(GetEnumName(value.Value).ToFirstCharacterLowerCase());
             }
         }
 
@@ -432,6 +433,19 @@ namespace Microsoft.Kiota.Serialization.Json
         {
             writer.Dispose();
             GC.SuppressFinalize(this);
+        }
+        
+        private string GetEnumName<T>(T value) where T : struct, Enum
+        {
+            var type = typeof(T);
+
+            if (Enum.GetName(type, value) is not { } name)
+                throw new ArgumentException($"Invalid Enum value {value} for enum of type {type}");
+            
+            if (type.GetMember(name).FirstOrDefault()?.GetCustomAttribute<EnumMemberAttribute>() is { } attribute)
+                return attribute.Value;
+            
+            return name;
         }
     }
 }

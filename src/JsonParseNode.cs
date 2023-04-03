@@ -7,6 +7,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text.Json;
 using Microsoft.Kiota.Abstractions.Serialization;
 using Microsoft.Kiota.Abstractions;
@@ -152,7 +153,10 @@ namespace Microsoft.Kiota.Serialization.Json
         {
             var rawValue = _jsonNode.GetString();
             if(string.IsNullOrEmpty(rawValue)) return null;
-            if(typeof(T).GetCustomAttributes<FlagsAttribute>().Any())
+            
+            var type = typeof(T);
+            rawValue = ToEnumRawName<T>(type, rawValue!);
+            if(type.GetCustomAttributes<FlagsAttribute>().Any())
             {
                 return (T)(object)rawValue!
                     .Split(',')
@@ -383,6 +387,16 @@ namespace Microsoft.Kiota.Serialization.Json
             }
 
             return default;
+        }
+        
+        private string ToEnumRawName<T>(Type type, string value) where T : struct, Enum
+        {
+            if (type.GetMembers().FirstOrDefault(member =>
+                   member.GetCustomAttribute<EnumMemberAttribute>() is { } attr &&
+                   value.Equals(attr.Value, StringComparison.Ordinal))?.Name is { } strValue)
+                return strValue;
+
+            return value;
         }
     }
 }

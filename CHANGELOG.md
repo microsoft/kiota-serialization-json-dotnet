@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## [1.0.4] - 2023-04-03
+
 ### Changed
+
+- Fixes a bug where EnumMember attribute was not taken into account during serialization/deserialization
 
 ## [1.0.3] - 2023-03-15
 
@@ -94,3 +98,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Initial Nuget release
+
