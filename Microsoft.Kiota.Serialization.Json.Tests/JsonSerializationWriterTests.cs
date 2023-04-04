@@ -137,13 +137,61 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             var expectedString = "[{" +
                                  "\"id\":\"48d31887-5fad-4d73-a9f5-3c356e68a038\"," +
                                  "\"numbers\":\"one,two\"," +
-                                 "\"testNamingEnum\":\"item2:SubItem1\"," +
+                                 "\"testNamingEnum\":\"Item2:SubItem1\"," +
                                  "\"mobilePhone\":null," +
                                  "\"accountEnabled\":false," +
                                  "\"jobTitle\":\"Author\"," +
                                  "\"createdDateTime\":\"0001-01-01T00:00:00+00:00\"," +
                                  "\"businessPhones\":[\"\\u002B1 412 555 0109\"]," +
                                  "\"manager\":{\"id\":\"48d31887-5fad-4d73-a9f5-3c356e68a038\"}" +
+                                 "}]";
+            Assert.Equal(expectedString, serializedJsonString);
+        }
+
+        [Fact]
+        public void WritesEnumValuesAsCamelCasedIfNotEscaped()
+        {
+            // Arrange
+            var testEntity = new TestEntity()
+            {
+                TestNamingEnum = TestNamingEnum.Item1,
+            };
+            var entityList = new List<TestEntity>() { testEntity };
+            using var jsonSerializerWriter = new JsonSerializationWriter();
+            // Act
+            jsonSerializerWriter.WriteCollectionOfObjectValues(string.Empty, entityList);
+            // Get the json string from the stream.
+            var serializedStream = jsonSerializerWriter.GetSerializedContent();
+            using var reader = new StreamReader(serializedStream, Encoding.UTF8);
+            var serializedJsonString = reader.ReadToEnd();
+
+            // Assert
+            var expectedString = "[{" +
+                                 "\"testNamingEnum\":\"item1\"" + // Camel Cased
+                                 "}]";
+            Assert.Equal(expectedString, serializedJsonString);
+        }
+
+        [Fact]
+        public void WritesEnumValuesAsDescribedIfEscaped()
+        {
+            // Arrange
+            var testEntity = new TestEntity()
+            {
+                TestNamingEnum = TestNamingEnum.Item2SubItem1,
+            };
+            var entityList = new List<TestEntity>() { testEntity };
+            using var jsonSerializerWriter = new JsonSerializationWriter();
+            // Act
+            jsonSerializerWriter.WriteCollectionOfObjectValues(string.Empty, entityList);
+            // Get the json string from the stream.
+            var serializedStream = jsonSerializerWriter.GetSerializedContent();
+            using var reader = new StreamReader(serializedStream, Encoding.UTF8);
+            var serializedJsonString = reader.ReadToEnd();
+
+            // Assert
+            var expectedString = "[{" +
+                                 "\"testNamingEnum\":\"Item2:SubItem1\"" + // Appears same as attribute
                                  "}]";
             Assert.Equal(expectedString, serializedJsonString);
         }

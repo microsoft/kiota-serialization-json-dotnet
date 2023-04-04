@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## [1.0.5] - 2023-04-04
+
+### Changed
+
+- Fixes a bug where EnumMember attribute enums would have the first letter lowecased
+
 ## [1.0.4] - 2023-04-03
 
 ### Changed
