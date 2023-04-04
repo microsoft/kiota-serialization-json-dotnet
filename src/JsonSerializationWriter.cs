@@ -243,9 +243,8 @@ namespace Microsoft.Kiota.Serialization.Json
                                             .Cast<T>()
                                             .Where(x => value.Value.HasFlag(x))
                                             .Select(GetEnumName)
-                                            .Select(x => x.ToFirstCharacterLowerCase())
                                             .Aggregate((x, y) => $"{x},{y}"));
-                else writer.WriteStringValue(GetEnumName(value.Value).ToFirstCharacterLowerCase());
+                else writer.WriteStringValue(GetEnumName(value.Value));
             }
         }
 
@@ -435,7 +434,7 @@ namespace Microsoft.Kiota.Serialization.Json
             GC.SuppressFinalize(this);
         }
         
-        private string GetEnumName<T>(T value) where T : struct, Enum
+        private string? GetEnumName<T>(T value) where T : struct, Enum
         {
             var type = typeof(T);
 
@@ -445,7 +444,7 @@ namespace Microsoft.Kiota.Serialization.Json
             if (type.GetMember(name).FirstOrDefault()?.GetCustomAttribute<EnumMemberAttribute>() is { } attribute)
                 return attribute.Value;
             
-            return name;
+            return name?.ToFirstCharacterLowerCase();
         }
     }
 }
