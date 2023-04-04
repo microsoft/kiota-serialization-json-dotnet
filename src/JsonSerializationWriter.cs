@@ -444,7 +444,7 @@ namespace Microsoft.Kiota.Serialization.Json
             if (type.GetMember(name).FirstOrDefault()?.GetCustomAttribute<EnumMemberAttribute>() is { } attribute)
                 return attribute.Value;
             
-            return name?.ToFirstCharacterLowerCase();
+            return name.ToFirstCharacterLowerCase();
         }
     }
 }
