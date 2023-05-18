@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## [1.0.5] - 2023-05-17
+
+###Changed
+
+-Fixes a bug where 'new' keyword on derived classes from IParsable is not being respected, returning null properties for json parsed nodes
+
+### Added
+
 ## [1.0.5] - 2023-04-04
 
 ### Changed
