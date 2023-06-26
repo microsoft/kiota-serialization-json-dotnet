@@ -82,7 +82,7 @@ public class UnionWrapperParseTests {
         Assert.Equal("officeLocation", result.StringValue);
     }
     [Fact]
-    public void SerializesIntersectionTypeStringValue()
+    public void SerializesUnionTypeStringValue()
     {
         // Given
         using var writer = _serializationWriterFactory.GetSerializationWriter(contentType);
@@ -100,7 +100,7 @@ public class UnionWrapperParseTests {
         Assert.Equal("\"officeLocation\"", result);
     }
     [Fact]
-    public void SerializesIntersectionTypeComplexProperty1()
+    public void SerializesUnionTypeComplexProperty1()
     {
         // Given
         using var writer = _serializationWriterFactory.GetSerializationWriter(contentType);
@@ -124,7 +124,7 @@ public class UnionWrapperParseTests {
         Assert.Equal("{\"id\":\"opaque\",\"officeLocation\":\"Montreal\"}", result);
     }
     [Fact]
-    public void SerializesIntersectionTypeComplexProperty2()
+    public void SerializesUnionTypeComplexProperty2()
     {
         // Given
         using var writer = _serializationWriterFactory.GetSerializationWriter(contentType);
@@ -146,7 +146,7 @@ public class UnionWrapperParseTests {
     }
 
     [Fact]
-    public void SerializesIntersectionTypeComplexProperty3()
+    public void SerializesUnionTypeComplexProperty3()
     {
         // Given
         using var writer = _serializationWriterFactory.GetSerializationWriter(contentType);
