@@ -39,8 +39,4 @@ public class IntersectionTypeMock : IParsable, IComposedTypeWrapper
             writer.WriteObjectValue(null, ComposedType1, ComposedType2);
         }
     }
-    public bool IsScalarValue()
-    {
-        return ComposedType3 != null || !string.IsNullOrEmpty(StringValue);
-    }
 }

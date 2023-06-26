@@ -48,8 +48,4 @@ public class UnionTypeMock : IParsable, IComposedTypeWrapper
             writer.WriteStringValue(null, StringValue);
         }
     }
-    public bool IsScalarValue()
-    {
-        return ComposedType3 != null || !string.IsNullOrEmpty(StringValue);
-    }
 }
