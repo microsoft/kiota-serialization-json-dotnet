@@ -5,7 +5,7 @@ using Microsoft.Kiota.Abstractions.Serialization;
 
 namespace Microsoft.Kiota.Serialization.Json.Tests.Mocks;
 
-public class IntersectionTypeMock : IParsable
+public class IntersectionTypeMock : IParsable, IComposedTypeWrapper
 {
     public TestEntity ComposedType1 { get; set; }
     public SecondTestEntity ComposedType2 { get; set; }
@@ -38,5 +38,9 @@ public class IntersectionTypeMock : IParsable
         } else {
             writer.WriteObjectValue(null, ComposedType1, ComposedType2);
         }
+    }
+    public bool IsScalarValue()
+    {
+        return ComposedType3 != null || !string.IsNullOrEmpty(StringValue);
     }
 }

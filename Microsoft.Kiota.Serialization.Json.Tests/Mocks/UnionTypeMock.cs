@@ -5,7 +5,7 @@ using Microsoft.Kiota.Abstractions.Serialization;
 
 namespace Microsoft.Kiota.Serialization.Json.Tests.Mocks;
 
-public class UnionTypeMock : IParsable
+public class UnionTypeMock : IParsable, IComposedTypeWrapper
 {
     public TestEntity ComposedType1 { get; set; }
     public SecondTestEntity ComposedType2 { get; set; }
@@ -47,5 +47,9 @@ public class UnionTypeMock : IParsable
         } else if (!string.IsNullOrEmpty(StringValue)) {
             writer.WriteStringValue(null, StringValue);
         }
+    }
+    public bool IsScalarValue()
+    {
+        return ComposedType3 != null || !string.IsNullOrEmpty(StringValue);
     }
 }

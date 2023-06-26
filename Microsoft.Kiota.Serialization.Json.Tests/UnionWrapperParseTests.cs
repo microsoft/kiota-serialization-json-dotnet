@@ -91,7 +91,7 @@ public class UnionWrapperParseTests {
         };
     
         // When
-        model.Serialize(writer);
+        writer.WriteObjectValue(string.Empty, model);
         using var resultStream = writer.GetSerializedContent();
         using var streamReader = new StreamReader(resultStream);
         var result = streamReader.ReadToEnd();
@@ -115,7 +115,7 @@ public class UnionWrapperParseTests {
         };
     
         // When
-        model.Serialize(writer);
+        writer.WriteObjectValue(string.Empty, model);
         using var resultStream = writer.GetSerializedContent();
         using var streamReader = new StreamReader(resultStream);
         var result = streamReader.ReadToEnd();
@@ -136,7 +136,7 @@ public class UnionWrapperParseTests {
         };
     
         // When
-        model.Serialize(writer);
+        writer.WriteObjectValue(string.Empty, model);
         using var resultStream = writer.GetSerializedContent();
         using var streamReader = new StreamReader(resultStream);
         var result = streamReader.ReadToEnd();
@@ -164,7 +164,7 @@ public class UnionWrapperParseTests {
         };
     
         // When
-        model.Serialize(writer);
+        writer.WriteObjectValue(string.Empty, model);
         using var resultStream = writer.GetSerializedContent();
         using var streamReader = new StreamReader(resultStream);
         var result = streamReader.ReadToEnd();
