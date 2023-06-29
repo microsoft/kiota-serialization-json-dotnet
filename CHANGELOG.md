@@ -9,9 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## [1.0.7] - 2023-06-28
+
+### Changed
+
+- Fixed composed types serialization.
+
+## [1.0.6] - 2023-05-19
+
+### Changed
+
+- #86: Fix inheritance new keyword for hiding existing implementation of deserializing method
+- #85: Bump Microsoft.NET.Test.Sdk from 17.5.0 to 17.6.0
+- #84: Bump Microsoft.TestPlatform.ObjectModel from 17.5.0 to 17.6.0
+- #82: Bump dependabot/fetch-metadata from 1.3.6 to 1.4.0
+- #81: Bump Microsoft.Kiota.Abstractions from 1.1.0 to 1.1.1
+
 ## [1.0.5] - 2023-05-17
 
-###Changed
+### Changed
 
 -Fixes a bug where 'new' keyword on derived classes from IParsable is not being respected, returning null properties for json parsed nodes
 

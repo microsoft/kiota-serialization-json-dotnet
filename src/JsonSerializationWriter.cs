@@ -316,23 +316,27 @@ namespace Microsoft.Kiota.Serialization.Json
         /// <param name="additionalValuesToMerge">The additional values to merge to the main value when serializing an intersection wrapper.</param>
         public void WriteObjectValue<T>(string? key, T? value, params IParsable?[] additionalValuesToMerge) where T : IParsable
         {
-            if(value != null || additionalValuesToMerge.Any(static x => x != null))
+            var filteredAdditionalValuesToMerge = additionalValuesToMerge.OfType<IParsable>().ToArray();
+            if(value != null || filteredAdditionalValuesToMerge.Any())
             {
                 if(!string.IsNullOrEmpty(key)) writer.WritePropertyName(key!);
                 if(value != null) OnBeforeObjectSerialization?.Invoke(value);
-                writer.WriteStartObject();
+                var serializingScalarValue = value is IComposedTypeWrapper;
+                if (!serializingScalarValue)
+                    writer.WriteStartObject();
                 if(value != null) {
                     OnStartObjectSerialization?.Invoke(value, this);
                     value.Serialize(this);
                 }
-                foreach(var additionalValueToMerge in additionalValuesToMerge.Where(static x => x != null))
+                foreach(var additionalValueToMerge in filteredAdditionalValuesToMerge)
                 {
                     OnBeforeObjectSerialization?.Invoke(additionalValueToMerge!);
                     OnStartObjectSerialization?.Invoke(additionalValueToMerge!, this);
                     additionalValueToMerge!.Serialize(this);
                     OnAfterObjectSerialization?.Invoke(additionalValueToMerge);
                 }
-                writer.WriteEndObject();
+                if (!serializingScalarValue)
+                    writer.WriteEndObject();
                 if(value != null) OnAfterObjectSerialization?.Invoke(value);
             }
         }
