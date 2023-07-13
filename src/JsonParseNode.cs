@@ -223,6 +223,7 @@ namespace Microsoft.Kiota.Serialization.Json
         private static readonly Type stringType = typeof(string);
         private static readonly Type intType = typeof(int?);
         private static readonly Type floatType = typeof(float?);
+        private static readonly Type longType = typeof(long?);
         private static readonly Type doubleType = typeof(double?);
         private static readonly Type guidType = typeof(Guid?);
         private static readonly Type dateTimeOffsetType = typeof(DateTimeOffset?);
@@ -257,6 +258,8 @@ namespace Microsoft.Kiota.Serialization.Json
                         yield return (T)(object)currentParseNode.GetIntValue()!;
                     else if(genericType == floatType)
                         yield return (T)(object)currentParseNode.GetFloatValue()!;
+                    else if(genericType == longType)
+                        yield return (T)(object)currentParseNode.GetLongValue()!;
                     else if(genericType == doubleType)
                         yield return (T)(object)currentParseNode.GetDoubleValue()!;
                     else if(genericType == guidType)

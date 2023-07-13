@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## [1.0.8] - 2023-07-14
+
+### Changed
+
+- Fixes deserialization of arrays with item type long
+
 ## [1.0.7] - 2023-06-28
 
 ### Changed
@@ -29,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
--Fixes a bug where 'new' keyword on derived classes from IParsable is not being respected, returning null properties for json parsed nodes
+- Fixes a bug where 'new' keyword on derived classes from IParsable is not being respected, returning null properties for json parsed nodes
 
 ### Added
 
