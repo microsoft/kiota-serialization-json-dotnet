@@ -34,7 +34,7 @@ namespace Microsoft.Kiota.Serialization.Json
 
             _ = content ?? throw new ArgumentNullException(nameof(content));
 
-            using var jsonDocument = JsonDocument.Parse(content);
+            using var jsonDocument = JsonDocument.ParseAsync(content).GetAwaiter().GetResult(); // so sever side code doesn't block
             return new JsonParseNode(jsonDocument.RootElement.Clone());
         }
     }
