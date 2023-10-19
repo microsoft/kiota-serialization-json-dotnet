@@ -13,6 +13,9 @@ using Microsoft.Kiota.Abstractions.Serialization;
 using Microsoft.Kiota.Abstractions;
 using System.Xml;
 using Microsoft.Kiota.Abstractions.Extensions;
+#if NET5_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
+#endif
 
 namespace Microsoft.Kiota.Serialization.Json
 {
@@ -149,13 +152,17 @@ namespace Microsoft.Kiota.Serialization.Json
         /// Get the enumeration value of type <typeparam name="T"/>from the json node
         /// </summary>
         /// <returns>An enumeration value or null</returns>
+#if NET5_0_OR_GREATER
+        public T? GetEnumValue<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>() where T : struct, Enum
+#else
         public T? GetEnumValue<T>() where T : struct, Enum
+#endif
         {
             var rawValue = _jsonNode.GetString();
             if(string.IsNullOrEmpty(rawValue)) return null;
             
             var type = typeof(T);
-            rawValue = ToEnumRawName<T>(type, rawValue!);
+            rawValue = ToEnumRawName<T>(rawValue!);
             if(type.GetCustomAttributes<FlagsAttribute>().Any())
             {
                 return (T)(object)rawValue!
@@ -193,7 +200,11 @@ namespace Microsoft.Kiota.Serialization.Json
         /// Gets the collection of enum values of the node.
         /// </summary>
         /// <returns>The collection of enum values.</returns>
+#if NET5_0_OR_GREATER
+        public IEnumerable<T?> GetCollectionOfEnumValues<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]T>() where T : struct, Enum
+#else
         public IEnumerable<T?> GetCollectionOfEnumValues<T>() where T : struct, Enum
+#endif
         {
             if (_jsonNode.ValueKind == JsonValueKind.Array) {
                 var enumerator = _jsonNode.EnumerateArray();
@@ -301,7 +312,11 @@ namespace Microsoft.Kiota.Serialization.Json
             OnAfterAssignFieldValues?.Invoke(item);
             return item;
         }
+#if NET5_0_OR_GREATER
+        private void AssignFieldValues<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T>(T item) where T : IParsable
+#else
         private void AssignFieldValues<T>(T item) where T : IParsable
+#endif
         {
             if(_jsonNode.ValueKind != JsonValueKind.Object) return;
             IDictionary<string, object>? itemAdditionalData = null;
@@ -312,7 +327,7 @@ namespace Microsoft.Kiota.Serialization.Json
             }
             //When targeting maccatalyst, new keyword for hiding an existing member is not being respected, returning only id and odata type
             //the below line fixes the issue
-            var fieldDeserializers = (IDictionary<string, Action<IParseNode>>) item.GetType().GetMethod("GetFieldDeserializers").Invoke(item, null);  
+            var fieldDeserializers = typeof(T).GetMethod("GetFieldDeserializers")?.Invoke(item, null) is IDictionary<string, Action<IParseNode>> result ? result : item.GetFieldDeserializers();  
 
             foreach(var fieldValue in _jsonNode.EnumerateObject())
             {
@@ -394,9 +409,13 @@ namespace Microsoft.Kiota.Serialization.Json
             return default;
         }
         
-        private string ToEnumRawName<T>(Type type, string value) where T : struct, Enum
+#if NET5_0_OR_GREATER
+        private static string ToEnumRawName<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(string value) where T : struct, Enum
+#else
+        private static string ToEnumRawName<T>(string value) where T : struct, Enum
+#endif
         {
-            if (type.GetMembers().FirstOrDefault(member =>
+            if (typeof(T).GetMembers().FirstOrDefault(member =>
                    member.GetCustomAttribute<EnumMemberAttribute>() is { } attr &&
                    value.Equals(attr.Value, StringComparison.Ordinal))?.Name is { } strValue)
                 return strValue;
