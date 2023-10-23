@@ -312,11 +312,7 @@ namespace Microsoft.Kiota.Serialization.Json
             OnAfterAssignFieldValues?.Invoke(item);
             return item;
         }
-#if NET5_0_OR_GREATER
-        private void AssignFieldValues<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T>(T item) where T : IParsable
-#else
         private void AssignFieldValues<T>(T item) where T : IParsable
-#endif
         {
             if(_jsonNode.ValueKind != JsonValueKind.Object) return;
             IDictionary<string, object>? itemAdditionalData = null;
@@ -325,9 +321,7 @@ namespace Microsoft.Kiota.Serialization.Json
                 holder.AdditionalData ??= new Dictionary<string, object>();
                 itemAdditionalData = holder.AdditionalData;
             }
-            //When targeting maccatalyst, new keyword for hiding an existing member is not being respected, returning only id and odata type
-            //the below line fixes the issue
-            var fieldDeserializers = typeof(T).GetMethod("GetFieldDeserializers")?.Invoke(item, null) is IDictionary<string, Action<IParseNode>> result ? result : item.GetFieldDeserializers();  
+            var fieldDeserializers = item.GetFieldDeserializers();  
 
             foreach(var fieldValue in _jsonNode.EnumerateObject())
             {
