@@ -312,11 +312,7 @@ namespace Microsoft.Kiota.Serialization.Json
             OnAfterAssignFieldValues?.Invoke(item);
             return item;
         }
-#if NET5_0_OR_GREATER
-        private void AssignFieldValues<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T>(T item) where T : IParsable
-#else
         private void AssignFieldValues<T>(T item) where T : IParsable
-#endif
         {
             if(_jsonNode.ValueKind != JsonValueKind.Object) return;
             IDictionary<string, object>? itemAdditionalData = null;
