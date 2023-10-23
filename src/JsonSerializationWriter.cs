@@ -13,6 +13,9 @@ using System.Runtime.Serialization;
 using Microsoft.Kiota.Abstractions.Extensions;
 using Microsoft.Kiota.Abstractions;
 using System.Xml;
+#if NET5_0_OR_GREATER
+using System.Diagnostics.CodeAnalysis;
+#endif
 
 namespace Microsoft.Kiota.Serialization.Json
 {
@@ -233,7 +236,11 @@ namespace Microsoft.Kiota.Serialization.Json
         /// </summary>
         /// <param name="key">The key of the json node</param>
         /// <param name="value">The enumeration value</param>
+#if NET5_0_OR_GREATER
+        public void WriteEnumValue<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]T>(string? key, T? value) where T : struct, Enum
+#else
         public void WriteEnumValue<T>(string? key, T? value) where T : struct, Enum
+#endif
         {
             if(!string.IsNullOrEmpty(key) && value.HasValue) writer.WritePropertyName(key!);
             if(value.HasValue)
@@ -286,7 +293,11 @@ namespace Microsoft.Kiota.Serialization.Json
         /// </summary>
         /// <param name="key">The key to be used for the written value. May be null.</param>
         /// <param name="values">The enum values to be written.</param>
+#if NET5_0_OR_GREATER
+        public void WriteCollectionOfEnumValues<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]T>(string? key, IEnumerable<T?>? values) where T : struct, Enum
+#else
         public void WriteCollectionOfEnumValues<T>(string? key, IEnumerable<T?>? values) where T : struct, Enum
+#endif
         {
             if(values != null)
             { //empty array is meaningful
@@ -437,8 +448,11 @@ namespace Microsoft.Kiota.Serialization.Json
             writer.Dispose();
             GC.SuppressFinalize(this);
         }
-        
-        private string? GetEnumName<T>(T value) where T : struct, Enum
+#if NET5_0_OR_GREATER
+        private static string? GetEnumName<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]T>(T value) where T : struct, Enum
+#else
+        private static string? GetEnumName<T>(T value) where T : struct, Enum
+#endif
         {
             var type = typeof(T);
 
