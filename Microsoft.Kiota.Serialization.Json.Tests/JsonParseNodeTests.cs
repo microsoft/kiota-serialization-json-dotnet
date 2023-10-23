@@ -34,6 +34,33 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
                                             "    \"birthDay\": \"2017-09-04\",\r\n" +
                                             "    \"id\": \"48d31887-5fad-4d73-a9f5-3c356e68a038\"\r\n" +
                                             "}";
+        private const string TestStudentJson = "{\r\n" +
+                                            "    \"@odata.context\": \"https://graph.microsoft.com/v1.0/$metadata#users/$entity\",\r\n" +
+                                            "    \"@odata.type\": \"microsoft.graph.student\",\r\n" +
+                                            "    \"@odata.id\": \"https://graph.microsoft.com/v2/dcd219dd-bc68-4b9b-bf0b-4a33a796be35/directoryObjects/48d31887-5fad-4d73-a9f5-3c356e68a038/Microsoft.DirectoryServices.User\",\r\n" +
+                                            "    \"businessPhones\": [\r\n" +
+                                            "        \"+1 412 555 0109\"\r\n" +
+                                            "    ],\r\n" +
+                                            "    \"displayName\": \"Megan Bowen\",\r\n" +
+                                            "    \"numbers\":\"one,two,thirtytwo\"," +
+                                            "    \"testNamingEnum\":\"Item2:SubItem1\"," +
+                                            "    \"givenName\": \"Megan\",\r\n" +
+                                            "    \"accountEnabled\": true,\r\n" +
+                                            "    \"createdDateTime\": \"2017 -07-29T03:07:25Z\",\r\n" +
+                                            "    \"jobTitle\": \"Auditor\",\r\n" +
+                                            "    \"mail\": \"MeganB@M365x214355.onmicrosoft.com\",\r\n" +
+                                            "    \"mobilePhone\": null,\r\n" +
+                                            "    \"officeLocation\": null,\r\n" +
+                                            "    \"preferredLanguage\": \"en-US\",\r\n" +
+                                            "    \"surname\": \"Bowen\",\r\n" +
+                                            "    \"workDuration\": \"PT1H\",\r\n" +
+                                            "    \"startWorkTime\": \"08:00:00.0000000\",\r\n" +
+                                            "    \"endWorkTime\": \"17:00:00.0000000\",\r\n" +
+                                            "    \"userPrincipalName\": \"MeganB@M365x214355.onmicrosoft.com\",\r\n" +
+                                            "    \"birthDay\": \"2017-09-04\",\r\n" +
+                                            "    \"enrolmentDate\": \"2017-09-04\",\r\n" +
+                                            "    \"id\": \"48d31887-5fad-4d73-a9f5-3c356e68a038\"\r\n" +
+                                            "}";
 
         private static readonly string TestUserCollectionString = $"[{TestUserJson}]";
 
@@ -44,7 +71,7 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             using var jsonDocument = JsonDocument.Parse(TestUserJson);
             var jsonParseNode = new JsonParseNode(jsonDocument.RootElement);
             // Act
-            var testEntity = jsonParseNode.GetObjectValue<TestEntity>(x => new TestEntity());
+            var testEntity = jsonParseNode.GetObjectValue(TestEntity.CreateFromDiscriminator);
             // Assert
             Assert.NotNull(testEntity);
             Assert.Null(testEntity.OfficeLocation);
@@ -59,6 +86,18 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             Assert.Equal(new Time(8,0,0).ToString(),testEntity.StartWorkTime.ToString());// Parses time values
             Assert.Equal(new Time(17, 0, 0).ToString(), testEntity.EndWorkTime.ToString());// Parses time values
             Assert.Equal(new Date(2017,9,4).ToString(), testEntity.BirthDay.ToString());// Parses date values
+        }
+        [Fact]
+        public void GetsFieldFromDerivedType()
+        {
+            // Arrange
+            using var jsonDocument = JsonDocument.Parse(TestStudentJson);
+            var jsonParseNode = new JsonParseNode(jsonDocument.RootElement);
+            // Act
+            var testEntity = jsonParseNode.GetObjectValue(TestEntity.CreateFromDiscriminator) as DerivedTestEntity;
+            // Assert
+            Assert.NotNull(testEntity);
+            Assert.NotNull(testEntity.EnrolmentDate);
         }
 
         [Fact]

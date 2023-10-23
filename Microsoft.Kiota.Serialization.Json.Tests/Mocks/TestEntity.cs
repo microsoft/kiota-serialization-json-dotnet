@@ -70,7 +70,14 @@ namespace Microsoft.Kiota.Serialization.Json.Tests.Mocks
             writer.WriteAdditionalData(AdditionalData);
         }
         public static TestEntity CreateFromDiscriminator(IParseNode parseNode) {
-            return new TestEntity();
+            var discriminatorValue = parseNode.GetChildNode("@odata.type")?.GetStringValue();
+            return discriminatorValue switch
+            {
+                "microsoft.graph.user" => new TestEntity(),
+                "microsoft.graph.group" => new TestEntity(),
+                "microsoft.graph.student" => new DerivedTestEntity(),
+                _ => new TestEntity(),
+            };
         }
     }
 }
