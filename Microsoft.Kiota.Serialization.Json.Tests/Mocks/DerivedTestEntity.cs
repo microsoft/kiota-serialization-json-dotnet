@@ -11,13 +11,13 @@ namespace Microsoft.Kiota.Serialization.Json.Tests.Mocks
         /// Date enrolled in primary school
         /// </summary>
         public Date? EnrolmentDate { get; set; }
-        public new IDictionary<string, Action<IParseNode>> GetFieldDeserializers()
+        public override IDictionary<string, Action<IParseNode>> GetFieldDeserializers()
         {
             var parentDeserializers = base.GetFieldDeserializers();
             parentDeserializers.Add("enrolmentDate", n => { EnrolmentDate = n.GetDateValue(); });
             return parentDeserializers;
         }
-        public new void Serialize(ISerializationWriter writer)
+        public override void Serialize(ISerializationWriter writer)
         {
             base.Serialize(writer);
             writer.WriteDateValue("enrolmentDate", EnrolmentDate.Value);
