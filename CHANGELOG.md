@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## [1.1.2] - 2023-11-15
+
+### Added
+
+- Added support for dotnet 8.
+
 ## [1.1.1] - 2023-10-23
 
 ### Changed
