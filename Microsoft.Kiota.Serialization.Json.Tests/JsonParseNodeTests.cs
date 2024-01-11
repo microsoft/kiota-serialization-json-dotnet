@@ -138,5 +138,41 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             // Assert
             Assert.Null(imaginaryNode);
         }
+
+        [Fact]
+        public void GetCollectionOfObjectValuesReturnsNullForNonArray()
+        {
+            // Arrange
+            using var jsonDocument = JsonDocument.Parse(TestStudentJson);
+            var jsonParseNode = new JsonParseNode(jsonDocument.RootElement);
+            // Act
+            var testEntityCollection = jsonParseNode.GetCollectionOfObjectValues<TestEntity>(x => new TestEntity());
+            // Assert
+            Assert.Null(testEntityCollection);
+        }
+
+        [Fact]
+        public void GetCollectionOfEnumValuesReturnsNullForNonArray()
+        {
+            // Arrange
+            using var jsonDocument = JsonDocument.Parse(TestStudentJson);
+            var jsonParseNode = new JsonParseNode(jsonDocument.RootElement);
+            // Act
+            var testEntityCollection = jsonParseNode.GetCollectionOfEnumValues<TestEnum>();
+            // Assert
+            Assert.Null(testEntityCollection);
+        }
+
+        [Fact]
+        public void GetCollectionOfPrimitiveValuesReturnsNullForNonArray()
+        {
+            // Arrange
+            using var jsonDocument = JsonDocument.Parse(TestStudentJson);
+            var jsonParseNode = new JsonParseNode(jsonDocument.RootElement);
+            // Act
+            var testEntityCollection = jsonParseNode.GetCollectionOfPrimitiveValues<string>();
+            // Assert
+            Assert.Null(testEntityCollection);
+        }
     }
 }
