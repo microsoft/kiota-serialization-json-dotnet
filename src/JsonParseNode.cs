@@ -13,6 +13,7 @@ using Microsoft.Kiota.Abstractions.Serialization;
 using Microsoft.Kiota.Abstractions;
 using System.Xml;
 using Microsoft.Kiota.Abstractions.Extensions;
+
 #if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
 #endif
@@ -228,6 +229,44 @@ namespace Microsoft.Kiota.Serialization.Json
             if(string.IsNullOrEmpty(rawValue)) return null;
             return Convert.FromBase64String(rawValue);
         }
+        /// <summary>
+        /// Gets the untyped value of the node
+        /// </summary>
+        /// <returns>The untyped value of the node.</returns>
+        public UntypedNode? GetUntypedValue()
+        {
+            UntypedNode? untypedNode = null;
+            switch(_jsonNode.ValueKind)
+            {
+                case JsonValueKind.Number:
+                    var rawValue = _jsonNode.GetRawText();
+                    untypedNode = new UntypedNumber(rawValue);
+                    break;
+                case JsonValueKind.String:
+                    var stringValue = _jsonNode.GetString();
+                    untypedNode = new UntypedString(stringValue);
+                    break;
+                case JsonValueKind.True:
+                case JsonValueKind.False:
+                    var boolValue = _jsonNode.GetBoolean();
+                    untypedNode = new UntypedBoolean(boolValue);
+                    break;
+                case JsonValueKind.Array:
+                    var arrayValue = GetCollectionOfUntypedValues();
+                    untypedNode = new UntypedArray(arrayValue);
+                    break;
+                case JsonValueKind.Object:
+                    var objectValue = GetPropertiesOfUntypedObject();
+                    untypedNode = new UntypedObject(objectValue);
+                    break;
+                case JsonValueKind.Null:
+                case JsonValueKind.Undefined:
+                    untypedNode = new UntypedNull();
+                    break;
+            }
+            
+            return untypedNode;
+        }
         private static readonly Type booleanType = typeof(bool?);
         private static readonly Type byteType = typeof(byte?);
         private static readonly Type sbyteType = typeof(sbyte?);
@@ -290,6 +329,80 @@ namespace Microsoft.Kiota.Serialization.Json
         }
 
         /// <summary>
+        /// Gets the collection of untyped values of the node.
+        /// </summary>
+        /// <returns>The collection of untyped values.</returns>
+        private IEnumerable<UntypedNode> GetCollectionOfUntypedValues()
+        {
+            if (_jsonNode.ValueKind == JsonValueKind.Array)
+            {
+                foreach(var collectionValue in _jsonNode.EnumerateArray())
+                {
+                    var currentParseNode = new JsonParseNode(collectionValue)
+                    {
+                        OnBeforeAssignFieldValues = OnBeforeAssignFieldValues,
+                        OnAfterAssignFieldValues = OnAfterAssignFieldValues
+                    };
+                    yield return currentParseNode.GetUntypedValue()!;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the collection of properties in the untyped object.
+        /// </summary>
+        /// <returns>The collection of properties in the untyped object.</returns>
+        private IDictionary<string, UntypedNode> GetPropertiesOfUntypedObject()
+        {
+            var properties = new Dictionary<string, UntypedNode>();
+            if(_jsonNode.ValueKind == JsonValueKind.Object)
+            {
+                foreach(var objectValue in _jsonNode.EnumerateObject())
+                {
+                    UntypedNode? untypedNode;
+                    switch(objectValue.Value.ValueKind)
+                    {
+                        case JsonValueKind.Number:
+                            var stringRawValue = objectValue.Value.GetRawText();
+                            untypedNode = new UntypedNumber(stringRawValue);
+                            break;
+                        case JsonValueKind.String:
+                            var stringValue = objectValue.Value.GetString();
+                            untypedNode = new UntypedString(stringValue);
+                            break;
+                        case JsonValueKind.True:
+                        case JsonValueKind.False:
+                            var boolValue = objectValue.Value.GetBoolean();
+                            untypedNode = new UntypedBoolean(boolValue);
+                            break;
+                        case JsonValueKind.Array:
+                            var arrayValue = GetCollectionOfUntypedValues();
+                            untypedNode = new UntypedArray(arrayValue);
+                            break;
+                        case JsonValueKind.Object:
+                            var childNode = new JsonParseNode(objectValue.Value)
+                            {
+                                OnBeforeAssignFieldValues = OnBeforeAssignFieldValues,
+                                OnAfterAssignFieldValues = OnAfterAssignFieldValues
+                            };
+                            var objectVal = childNode.GetPropertiesOfUntypedObject();
+                            untypedNode = new UntypedObject(objectVal);
+                            break;
+                        case JsonValueKind.Null:
+                        case JsonValueKind.Undefined:
+                            untypedNode = new UntypedNull();
+                            break;
+                        default:
+                            untypedNode = new UntypedNull();
+                            break;
+                    }
+                    properties[objectValue.Name] = untypedNode;
+                }
+            }
+            return properties;
+        }
+
+        /// <summary>
         /// The action to perform before assigning field values.
         /// </summary>
         public Action<IParsable>? OnBeforeAssignFieldValues { get; set; }
@@ -306,6 +419,12 @@ namespace Microsoft.Kiota.Serialization.Json
         /// <returns>A object of the specified type</returns>
         public T GetObjectValue<T>(ParsableFactory<T> factory) where T : IParsable
         {
+            // until interface exposes GetUntypedValue()
+            var genericType = typeof(T);
+            if(genericType == typeof(UntypedNode))
+            {
+                return (T)(object)GetUntypedValue()!;
+            }
             var item = factory(this);
             OnBeforeAssignFieldValues?.Invoke(item);
             AssignFieldValues(item);
