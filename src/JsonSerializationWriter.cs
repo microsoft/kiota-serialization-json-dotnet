@@ -541,12 +541,11 @@ namespace Microsoft.Kiota.Serialization.Json
             return name.ToFirstCharacterLowerCase();
         }
         /// <summary>
-        /// 
+        /// Writes a untyped value for the specified key.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void WriteUntypedValue(string? key, UntypedNode? value)
+        /// <param name="key">The key to be used for the written value. May be null.</param>
+        /// <param name="value">The untyped node.</param>
+        private void WriteUntypedValue(string? key, UntypedNode? value)
         {
             switch(value)
             {
@@ -577,7 +576,7 @@ namespace Microsoft.Kiota.Serialization.Json
                     else if (double.TryParse(rawValue, out var doubleValue))
                     {
                         WriteDoubleValue(key, doubleValue);
-                    }                    
+                    }
                     break;
                 case UntypedObject:
                     WriteUntypedObject(key, (UntypedObject)value);
@@ -592,10 +591,10 @@ namespace Microsoft.Kiota.Serialization.Json
         }
 
         /// <summary>
-        /// Write a untyped value for the specified key.
+        /// Write a untyped object for the specified key.
         /// </summary>
         /// <param name="key">The key to be used for the written value. May be null.</param>
-        /// <param name="value"></param>
+        /// <param name="value">The untyped object.</param>
         private void WriteUntypedObject(string? key, UntypedObject? value)
         {
             if (value != null)

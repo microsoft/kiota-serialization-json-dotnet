@@ -282,7 +282,7 @@ namespace Microsoft.Kiota.Serialization.Json
         /// Gets the untyped value of the node
         /// </summary>
         /// <returns>The untyped value of the node.</returns>
-        public UntypedNode? GetUntypedValue()
+        private UntypedNode? GetUntypedValue()
         {
             UntypedNode? untypedNode = null;
             switch(_jsonNode.ValueKind)
