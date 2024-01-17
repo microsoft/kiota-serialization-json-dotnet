@@ -30,4 +30,10 @@
     <ProjectReference Include="..\src\Microsoft.Kiota.Serialization.Json.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Microsoft.Kiota.Abstractions">
+      <HintPath>..\..\kiota-abstractions-dotnet\src\bin\Debug\netstandard2.0\Microsoft.Kiota.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

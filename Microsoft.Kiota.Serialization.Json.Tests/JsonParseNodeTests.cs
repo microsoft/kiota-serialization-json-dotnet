@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.Json;
 using Microsoft.Kiota.Abstractions;
+using Microsoft.Kiota.Abstractions.Serialization;
 using Microsoft.Kiota.Serialization.Json.Tests.Converters;
 using Microsoft.Kiota.Serialization.Json.Tests.Mocks;
 using Xunit;
@@ -61,6 +62,46 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
                                             "    \"birthDay\": \"2017-09-04\",\r\n" +
                                             "    \"enrolmentDate\": \"2017-09-04\",\r\n" +
                                             "    \"id\": \"48d31887-5fad-4d73-a9f5-3c356e68a038\"\r\n" +
+                                            "}";
+
+        private const string TestUntypedJson = "{\r\n" +
+                                            "    \"@odata.context\": \"https://graph.microsoft.com/v1.0/$metadata#sites('contoso.sharepoint.com')/lists('fa631c4d-ac9f-4884-a7f5-13c659d177e3')/items('1')/fields/$entity\",\r\n" +
+                                            "    \"id\": \"5\",\r\n" +
+                                            "    \"title\": \"Project 101\",\r\n" +
+                                            "    \"location\": {\r\n" +
+                                            "        \"address\": {\r\n" +
+                                            "            \"city\": \"Redmond\",\r\n" +
+                                            "            \"postalCode\": \"98052\",\r\n" +
+                                            "            \"state\": \"Washington\",\r\n" +
+                                            "            \"street\": \"NE 36th St\"\r\n" +
+                                            "        },\r\n" +
+                                            "        \"coordinates\": {\r\n" +
+                                            "            \"latitude\": 47.641944,\r\n" +
+                                            "            \"longitude\": -122.127222\r\n" +
+                                            "        },\r\n" +
+                                            "        \"displayName\": \"Microsoft Building 92\",\r\n" +
+                                            "        \"floorCount\": 50,\r\n" +
+                                            "        \"hasReception\": true,\r\n" +
+                                            "        \"contact\": null\r\n" +
+                                            "    },\r\n" +
+                                            "    \"keywords\": [\r\n" +
+                                            "        {\r\n" +
+                                            "            \"created\": \"2023-07-26T10:41:26Z\",\r\n" +
+                                            "            \"label\": \"Keyword1\",\r\n" +
+                                            "            \"termGuid\": \"10e9cc83-b5a4-4c8d-8dab-4ada1252dd70\",\r\n" +
+                                            "            \"wssId\": 2\r\n" +
+                                            "        },\r\n" +
+                                            "        {\r\n" +
+                                            "            \"created\": \"2023-07-26T10:51:26Z\",\r\n" +
+                                            "            \"label\": \"Keyword2\",\r\n" +
+                                            "            \"termGuid\": \"2cae6c6a-9bb8-4a78-afff-81b88e735fef\",\r\n" +
+                                            "            \"wssId\": 3\r\n" +
+                                            "        }\r\n" +
+                                            "    ],\r\n" +
+                                            "    \"detail\": null,\r\n" +
+                                            "    \"extra\": {\r\n" +
+                                            "        \"createdDateTime\":\"2024-01-15T00:00:00\\u002B00:00\"\r\n" +
+                                            "    }\r\n" +
                                             "}";
 
         private static readonly string TestUserCollectionString = $"[{TestUserJson}]";
@@ -177,6 +218,39 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             
             // Assert
             Assert.Equal(id, entity.Id);
+        }
+
+        [Fact]
+        public void GetEntityWithUntypedNodesFromJson()
+        {
+            // Arrange
+            using var jsonDocument = JsonDocument.Parse(TestUntypedJson);
+            var rootParseNode = new JsonParseNode(jsonDocument.RootElement);
+            // Act
+            var entity = rootParseNode.GetObjectValue(UntypedTestEntity.CreateFromDiscriminator);
+            // Assert
+            Assert.NotNull(entity);
+            Assert.Equal("5", entity.Id);
+            Assert.Equal("Project 101", entity.Title);
+            Assert.NotNull(entity.Location);
+            Assert.Null(entity.Location.Value);
+            Assert.IsType<UntypedObject>(entity.Location); // creates untyped object
+            var location = (UntypedObject)entity.Location;
+            Assert.IsType<UntypedObject>(location.Properties["address"]);
+            Assert.IsType<UntypedString>(location.Properties["displayName"]); // creates untyped string
+            Assert.IsType<UntypedNumber>(location.Properties["floorCount"]); // creates untyped number
+            Assert.IsType<UntypedBoolean>(location.Properties["hasReception"]); // creates untyped boolean
+            Assert.IsType<UntypedNull>(location.Properties["contact"]); // creates untyped null
+            Assert.Equal("Microsoft Building 92", ((UntypedString)location.Properties["displayName"]).Value);
+            Assert.Equal("50", ((UntypedNumber)location.Properties["floorCount"]).Value);
+            Assert.True(((UntypedBoolean)location.Properties["hasReception"]).Value);
+            Assert.Null(location.Properties["contact"].Value);
+            Assert.NotNull(entity.Keywords);
+            Assert.IsType<UntypedArray>(entity.Keywords); // creates untyped array
+            Assert.Equal(2, ((UntypedArray)entity.Keywords).Value.Count());
+            Assert.Null(entity.Detail);
+            var extra = entity.AdditionalData["extra"];
+            Assert.NotNull(extra);
         }
     }
 }
