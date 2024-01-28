@@ -216,11 +216,11 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
                         })},
                         {"coordinates", new UntypedObject(new Dictionary<string, UntypedNode>
                         {
-                            {"latitude", new UntypedNumber("47.641944") },
-                            {"longitude", new UntypedNumber("-122.127222") }
+                            {"latitude", new UntypedDouble(47.641942d) },
+                            {"longitude", new UntypedDouble(-122.127222d) }
                         })},
                         {"displayName", new UntypedString("Microsoft Building 92") },
-                        {"floorCount", new UntypedNumber("50") },
+                        {"floorCount", new UntypedInteger(50) },
                         {"hasReception", new UntypedBoolean(true) },
                         {"contact", new UntypedNull() }
                     }),
@@ -231,14 +231,14 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
                         {"created", new UntypedString("2023-07-26T10:41:26Z") },
                         {"label", new UntypedString("Keyword1") },
                         {"termGuid", new UntypedString("10e9cc83-b5a4-4c8d-8dab-4ada1252dd70") },
-                        {"wssId", new UntypedNumber("2") }
+                        {"wssId", new UntypedLong(6442450941) }
                     }),
                     new UntypedObject(new Dictionary<string, UntypedNode>
                     {
                         {"created", new UntypedString("2023-07-26T10:51:26Z") },
                         {"label", new UntypedString("Keyword2") },
                         {"termGuid", new UntypedString("2cae6c6a-9bb8-4a78-afff-81b88e735fef") },
-                        {"wssId", new UntypedNumber("3") }
+                        {"wssId", new UntypedLong(6442450942) }
                     })
                 }),
                 AdditionalData = new Dictionary<string, object>
@@ -263,14 +263,14 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
                 "\"title\":\"Title\"," +
                 "\"location\":{" +
                 "\"address\":{\"city\":\"Redmond\",\"postalCode\":\"98052\",\"state\":\"Washington\",\"street\":\"NE 36th St\"}," +
-                "\"coordinates\":{\"latitude\":47.641944,\"longitude\":-122.127222}," +
+                "\"coordinates\":{\"latitude\":47.641942,\"longitude\":-122.127222}," +
                 "\"displayName\":\"Microsoft Building 92\"," +
                 "\"floorCount\":50," +
                 "\"hasReception\":true," +
                 "\"contact\":null}," +
                 "\"keywords\":[" +
-                "{\"created\":\"2023-07-26T10:41:26Z\",\"label\":\"Keyword1\",\"termGuid\":\"10e9cc83-b5a4-4c8d-8dab-4ada1252dd70\",\"wssId\":2}," +
-                "{\"created\":\"2023-07-26T10:51:26Z\",\"label\":\"Keyword2\",\"termGuid\":\"2cae6c6a-9bb8-4a78-afff-81b88e735fef\",\"wssId\":3}]," +
+                "{\"created\":\"2023-07-26T10:41:26Z\",\"label\":\"Keyword1\",\"termGuid\":\"10e9cc83-b5a4-4c8d-8dab-4ada1252dd70\",\"wssId\":6442450941}," +
+                "{\"created\":\"2023-07-26T10:51:26Z\",\"label\":\"Keyword2\",\"termGuid\":\"2cae6c6a-9bb8-4a78-afff-81b88e735fef\",\"wssId\":6442450942}]," +
                 "\"extra\":{\"createdDateTime\":\"2024-01-15T00:00:00\\u002B00:00\"}}";
             Assert.Equal(expectedString, serializedJsonString);
         }

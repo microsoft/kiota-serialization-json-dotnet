@@ -497,28 +497,20 @@ namespace Microsoft.Kiota.Serialization.Json
                 case UntypedBoolean:
                     WriteBoolValue(key, ((UntypedBoolean)value).Value);
                     break;
-                case UntypedNumber:
-                    var rawValue = ((UntypedNumber)value).Value;
-                    if (int.TryParse(rawValue, out var intValue))
-                    {
-                        WriteIntValue(key, intValue);
-                    }
-                    else if (long.TryParse(rawValue, out var longValue))
-                    {
-                        WriteLongValue(key, longValue);
-                    }
-                    else if(decimal.TryParse(rawValue, out var decimalValue))
-                    {
-                        WriteDecimalValue(key, decimalValue);
-                    }
-                    else if(float.TryParse(rawValue, out var floatValue))
-                    {
-                        WriteFloatValue(key, floatValue);
-                    }
-                    else if (double.TryParse(rawValue, out var doubleValue))
-                    {
-                        WriteDoubleValue(key, doubleValue);
-                    }
+                case UntypedInteger:
+                    WriteIntValue(key, ((UntypedInteger)value).Value);
+                    break;
+                case UntypedLong:
+                    WriteLongValue(key, ((UntypedLong)value).Value);
+                    break;
+                case UntypedDecimal:
+                    WriteDecimalValue(key, ((UntypedDecimal)value).Value);
+                    break;
+                case UntypedFloat:
+                    WriteFloatValue(key, ((UntypedFloat)value).Value);
+                    break;
+                case UntypedDouble:
+                    WriteDoubleValue(key, ((UntypedDouble)value).Value);
                     break;
                 case UntypedObject:
                     WriteUntypedObject(key, (UntypedObject)value);

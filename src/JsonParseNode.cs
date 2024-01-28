@@ -239,8 +239,27 @@ namespace Microsoft.Kiota.Serialization.Json
             switch(_jsonNode.ValueKind)
             {
                 case JsonValueKind.Number:
-                    var rawValue = _jsonNode.GetRawText();
-                    untypedNode = new UntypedNumber(rawValue);
+                    if(_jsonNode.TryGetInt32(out var intValue))
+                    {
+                        untypedNode = new UntypedInteger(intValue);
+                    }
+                    else if (_jsonNode.TryGetInt64(out var longValue))
+                    {
+                        untypedNode = new UntypedLong(longValue);
+                    }
+                    else if(_jsonNode.TryGetDecimal(out var decimalValue))
+                    {
+                        untypedNode = new UntypedDecimal(decimalValue);
+                    }
+                    else if(_jsonNode.TryGetSingle(out var floatValue))
+                    {
+                        untypedNode = new UntypedFloat(floatValue);
+                    }
+                    else if(_jsonNode.TryGetDouble(out var doubleValue))
+                    {
+                        untypedNode = new UntypedDouble(doubleValue);
+                    }
+                    else throw new InvalidOperationException("unexpected additional value type during number deserialization");
                     break;
                 case JsonValueKind.String:
                     var stringValue = _jsonNode.GetString();
@@ -363,8 +382,27 @@ namespace Microsoft.Kiota.Serialization.Json
                     switch(objectValue.Value.ValueKind)
                     {
                         case JsonValueKind.Number:
-                            var stringRawValue = objectValue.Value.GetRawText();
-                            untypedNode = new UntypedNumber(stringRawValue);
+                            if(objectValue.Value.TryGetInt32(out var intValue))
+                            {
+                                untypedNode = new UntypedInteger(intValue);
+                            }
+                            else if(objectValue.Value.TryGetInt64(out var longValue))
+                            {
+                                untypedNode = new UntypedLong(longValue);
+                            }
+                            else if(objectValue.Value.TryGetDecimal(out var decimalValue))
+                            {
+                                untypedNode = new UntypedDecimal(decimalValue);
+                            }
+                            else if(objectValue.Value.TryGetSingle(out var floatValue))
+                            {
+                                untypedNode = new UntypedFloat(floatValue);
+                            }
+                            else if(objectValue.Value.TryGetDouble(out var doubleValue))
+                            {
+                                untypedNode = new UntypedDouble(doubleValue);
+                            }
+                            else throw new InvalidOperationException("unexpected additional value type during number deserialization");
                             break;
                         case JsonValueKind.String:
                             var stringValue = objectValue.Value.GetString();
