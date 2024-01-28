@@ -76,7 +76,7 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
                                             "            \"street\": \"NE 36th St\"\r\n" +
                                             "        },\r\n" +
                                             "        \"coordinates\": {\r\n" +
-                                            "            \"latitude\": 47.641944,\r\n" +
+                                            "            \"latitude\": 47.641942,\r\n" +
                                             "            \"longitude\": -122.127222\r\n" +
                                             "        },\r\n" +
                                             "        \"displayName\": \"Microsoft Building 92\",\r\n" +
@@ -89,13 +89,13 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
                                             "            \"created\": \"2023-07-26T10:41:26Z\",\r\n" +
                                             "            \"label\": \"Keyword1\",\r\n" +
                                             "            \"termGuid\": \"10e9cc83-b5a4-4c8d-8dab-4ada1252dd70\",\r\n" +
-                                            "            \"wssId\": 2\r\n" +
+                                            "            \"wssId\": 6442450942\r\n" +
                                             "        },\r\n" +
                                             "        {\r\n" +
                                             "            \"created\": \"2023-07-26T10:51:26Z\",\r\n" +
                                             "            \"label\": \"Keyword2\",\r\n" +
                                             "            \"termGuid\": \"2cae6c6a-9bb8-4a78-afff-81b88e735fef\",\r\n" +
-                                            "            \"wssId\": 3\r\n" +
+                                            "            \"wssId\": 6442450943\r\n" +
                                             "        }\r\n" +
                                             "    ],\r\n" +
                                             "    \"detail\": null,\r\n" +
@@ -238,11 +238,15 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             var location = (UntypedObject)entity.Location;
             Assert.IsType<UntypedObject>(location.Properties["address"]);
             Assert.IsType<UntypedString>(location.Properties["displayName"]); // creates untyped string
-            Assert.IsType<UntypedNumber>(location.Properties["floorCount"]); // creates untyped number
+            Assert.IsType<UntypedInteger>(location.Properties["floorCount"]); // creates untyped number
             Assert.IsType<UntypedBoolean>(location.Properties["hasReception"]); // creates untyped boolean
             Assert.IsType<UntypedNull>(location.Properties["contact"]); // creates untyped null
+            Assert.IsType<UntypedObject>(location.Properties["coordinates"]); // creates untyped null
+            var coordinates = (UntypedObject)location.Properties["coordinates"];
+            Assert.IsType<UntypedDecimal>(coordinates.Properties["latitude"]); // creates untyped decimal
+            Assert.IsType<UntypedDecimal>(coordinates.Properties["longitude"]);
             Assert.Equal("Microsoft Building 92", ((UntypedString)location.Properties["displayName"]).Value);
-            Assert.Equal("50", ((UntypedNumber)location.Properties["floorCount"]).Value);
+            Assert.Equal(50, ((UntypedInteger)location.Properties["floorCount"]).Value);
             Assert.True(((UntypedBoolean)location.Properties["hasReception"]).Value);
             Assert.Null(location.Properties["contact"].Value);
             Assert.NotNull(entity.Keywords);
