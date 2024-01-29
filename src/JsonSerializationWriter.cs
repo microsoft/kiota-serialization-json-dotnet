@@ -403,6 +403,9 @@ namespace Microsoft.Kiota.Serialization.Json
                 case double d:
                     WriteDoubleValue(key, d);
                     break;
+                case decimal dec:
+                    WriteDecimalValue(key, dec);
+                    break;
                 case Guid g:
                     WriteGuidValue(key, g);
                     break;

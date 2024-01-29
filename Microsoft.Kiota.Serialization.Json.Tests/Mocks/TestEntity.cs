@@ -26,6 +26,8 @@ namespace Microsoft.Kiota.Serialization.Json.Tests.Mocks
         /// <summary>Read-only.</summary>
         public DateTimeOffset? CreatedDateTime { get; set; }
         /// <summary>Read-only.</summary>
+        public decimal? HeightInMetres { get; set; }
+        /// <summary>Read-only.</summary>
         public string OfficeLocation { get; set; }
         /// <summary>
         /// Instantiates a new entity and sets the default values.
@@ -46,6 +48,7 @@ namespace Microsoft.Kiota.Serialization.Json.Tests.Mocks
                 {"createdDateTime", n => { CreatedDateTime = n.GetDateTimeOffsetValue(); } },
                 {"officeLocation", n => { OfficeLocation = n.GetStringValue(); } },
                 {"workDuration", n => { WorkDuration = n.GetTimeSpanValue(); } },
+                {"heightInMetres", n => { HeightInMetres = n.GetDecimalValue(); } },
                 {"birthDay", n => { BirthDay = n.GetDateValue(); } },
                 {"startWorkTime", n => { StartWorkTime = n.GetTimeValue(); } },
                 {"endWorkTime", n => { EndWorkTime = n.GetTimeValue(); } },
@@ -65,6 +68,7 @@ namespace Microsoft.Kiota.Serialization.Json.Tests.Mocks
             writer.WriteStringValue("officeLocation", OfficeLocation);
             writer.WriteTimeSpanValue("workDuration", WorkDuration);
             writer.WriteDateValue("birthDay", BirthDay);
+            writer.WriteDecimalValue("heightInMetres", HeightInMetres);
             writer.WriteTimeValue("startWorkTime", StartWorkTime);
             writer.WriteTimeValue("endWorkTime", EndWorkTime);
             writer.WriteAdditionalData(AdditionalData);
