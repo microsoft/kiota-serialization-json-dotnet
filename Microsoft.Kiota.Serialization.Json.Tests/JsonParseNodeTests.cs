@@ -227,7 +227,7 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             using var jsonDocument = JsonDocument.Parse(TestUntypedJson);
             var rootParseNode = new JsonParseNode(jsonDocument.RootElement);
             // Act
-            var entity = rootParseNode.GetObjectValue(UntypedTestEntity.CreateFromDiscriminator);
+            var entity = rootParseNode.GetObjectValue(UntypedTestEntity.CreateFromDiscriminatorValue);
             // Assert
             Assert.NotNull(entity);
             Assert.Equal("5", entity.Id);

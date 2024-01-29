@@ -282,59 +282,7 @@ namespace Microsoft.Kiota.Serialization.Json
         /// Gets the untyped value of the node
         /// </summary>
         /// <returns>The untyped value of the node.</returns>
-        private UntypedNode? GetUntypedValue()
-        {
-            UntypedNode? untypedNode = null;
-            switch(_jsonNode.ValueKind)
-            {
-                case JsonValueKind.Number:
-                    if(_jsonNode.TryGetInt32(out var intValue))
-                    {
-                        untypedNode = new UntypedInteger(intValue);
-                    }
-                    else if (_jsonNode.TryGetInt64(out var longValue))
-                    {
-                        untypedNode = new UntypedLong(longValue);
-                    }
-                    else if(_jsonNode.TryGetDecimal(out var decimalValue))
-                    {
-                        untypedNode = new UntypedDecimal(decimalValue);
-                    }
-                    else if(_jsonNode.TryGetSingle(out var floatValue))
-                    {
-                        untypedNode = new UntypedFloat(floatValue);
-                    }
-                    else if(_jsonNode.TryGetDouble(out var doubleValue))
-                    {
-                        untypedNode = new UntypedDouble(doubleValue);
-                    }
-                    else throw new InvalidOperationException("unexpected additional value type during number deserialization");
-                    break;
-                case JsonValueKind.String:
-                    var stringValue = _jsonNode.GetString();
-                    untypedNode = new UntypedString(stringValue);
-                    break;
-                case JsonValueKind.True:
-                case JsonValueKind.False:
-                    var boolValue = _jsonNode.GetBoolean();
-                    untypedNode = new UntypedBoolean(boolValue);
-                    break;
-                case JsonValueKind.Array:
-                    var arrayValue = GetCollectionOfUntypedValues();
-                    untypedNode = new UntypedArray(arrayValue);
-                    break;
-                case JsonValueKind.Object:
-                    var objectValue = GetPropertiesOfUntypedObject();
-                    untypedNode = new UntypedObject(objectValue);
-                    break;
-                case JsonValueKind.Null:
-                case JsonValueKind.Undefined:
-                    untypedNode = new UntypedNull();
-                    break;
-            }
-            
-            return untypedNode;
-        }
+        private UntypedNode? GetUntypedValue() => GetUntypedValue(_jsonNode);
 
 
         /// <summary>
@@ -388,11 +336,11 @@ namespace Microsoft.Kiota.Serialization.Json
         /// Gets the collection of untyped values of the node.
         /// </summary>
         /// <returns>The collection of untyped values.</returns>
-        private IEnumerable<UntypedNode> GetCollectionOfUntypedValues()
+        private IEnumerable<UntypedNode> GetCollectionOfUntypedValues(JsonElement jsonNode)
         {
-            if (_jsonNode.ValueKind == JsonValueKind.Array)
+            if (jsonNode.ValueKind == JsonValueKind.Array)
             {
-                foreach(var collectionValue in _jsonNode.EnumerateArray())
+                foreach(var collectionValue in jsonNode.EnumerateArray())
                 {
                     var currentParseNode = new JsonParseNode(collectionValue)
                     {
@@ -408,73 +356,85 @@ namespace Microsoft.Kiota.Serialization.Json
         /// Gets the collection of properties in the untyped object.
         /// </summary>
         /// <returns>The collection of properties in the untyped object.</returns>
-        private IDictionary<string, UntypedNode> GetPropertiesOfUntypedObject()
+        private IDictionary<string, UntypedNode> GetPropertiesOfUntypedObject(JsonElement jsonNode)
         {
             var properties = new Dictionary<string, UntypedNode>();
-            if(_jsonNode.ValueKind == JsonValueKind.Object)
+            if(jsonNode.ValueKind == JsonValueKind.Object)
             {
-                foreach(var objectValue in _jsonNode.EnumerateObject())
+                foreach(var objectValue in jsonNode.EnumerateObject())
                 {
-                    UntypedNode? untypedNode;
-                    switch(objectValue.Value.ValueKind)
+                    JsonElement property = objectValue.Value;
+                    if(objectValue.Value.ValueKind == JsonValueKind.Object)
                     {
-                        case JsonValueKind.Number:
-                            if(objectValue.Value.TryGetInt32(out var intValue))
-                            {
-                                untypedNode = new UntypedInteger(intValue);
-                            }
-                            else if(objectValue.Value.TryGetInt64(out var longValue))
-                            {
-                                untypedNode = new UntypedLong(longValue);
-                            }
-                            else if(objectValue.Value.TryGetDecimal(out var decimalValue))
-                            {
-                                untypedNode = new UntypedDecimal(decimalValue);
-                            }
-                            else if(objectValue.Value.TryGetSingle(out var floatValue))
-                            {
-                                untypedNode = new UntypedFloat(floatValue);
-                            }
-                            else if(objectValue.Value.TryGetDouble(out var doubleValue))
-                            {
-                                untypedNode = new UntypedDouble(doubleValue);
-                            }
-                            else throw new InvalidOperationException("unexpected additional value type during number deserialization");
-                            break;
-                        case JsonValueKind.String:
-                            var stringValue = objectValue.Value.GetString();
-                            untypedNode = new UntypedString(stringValue);
-                            break;
-                        case JsonValueKind.True:
-                        case JsonValueKind.False:
-                            var boolValue = objectValue.Value.GetBoolean();
-                            untypedNode = new UntypedBoolean(boolValue);
-                            break;
-                        case JsonValueKind.Array:
-                            var arrayValue = GetCollectionOfUntypedValues();
-                            untypedNode = new UntypedArray(arrayValue);
-                            break;
-                        case JsonValueKind.Object:
-                            var childNode = new JsonParseNode(objectValue.Value)
-                            {
-                                OnBeforeAssignFieldValues = OnBeforeAssignFieldValues,
-                                OnAfterAssignFieldValues = OnAfterAssignFieldValues
-                            };
-                            var objectVal = childNode.GetPropertiesOfUntypedObject();
-                            untypedNode = new UntypedObject(objectVal);
-                            break;
-                        case JsonValueKind.Null:
-                        case JsonValueKind.Undefined:
-                            untypedNode = new UntypedNull();
-                            break;
-                        default:
-                            untypedNode = new UntypedNull();
-                            break;
+                        var childNode = new JsonParseNode(objectValue.Value)
+                        {
+                            OnBeforeAssignFieldValues = OnBeforeAssignFieldValues,
+                            OnAfterAssignFieldValues = OnAfterAssignFieldValues
+                        };
+                        var objectVal = childNode.GetPropertiesOfUntypedObject(childNode._jsonNode);
+                        properties[objectValue.Name] = new UntypedObject(objectVal);
                     }
-                    properties[objectValue.Name] = untypedNode;
+                    else
+                    {
+                        properties[objectValue.Name] = GetUntypedValue(property)!;
+                    }
                 }
             }
             return properties;
+        }
+
+        private UntypedNode? GetUntypedValue(JsonElement jsonNode)
+        {
+            UntypedNode? untypedNode = null;
+            switch(jsonNode.ValueKind)
+            {
+                case JsonValueKind.Number:
+                    if(jsonNode.TryGetInt32(out var intValue))
+                    {
+                        untypedNode = new UntypedInteger(intValue);
+                    }
+                    else if(jsonNode.TryGetInt64(out var longValue))
+                    {
+                        untypedNode = new UntypedLong(longValue);
+                    }
+                    else if(jsonNode.TryGetDecimal(out var decimalValue))
+                    {
+                        untypedNode = new UntypedDecimal(decimalValue);
+                    }
+                    else if(jsonNode.TryGetSingle(out var floatValue))
+                    {
+                        untypedNode = new UntypedFloat(floatValue);
+                    }
+                    else if(jsonNode.TryGetDouble(out var doubleValue))
+                    {
+                        untypedNode = new UntypedDouble(doubleValue);
+                    }
+                    else throw new InvalidOperationException("unexpected additional value type during number deserialization");
+                    break;
+                case JsonValueKind.String:
+                    var stringValue = jsonNode.GetString();
+                    untypedNode = new UntypedString(stringValue);
+                    break;
+                case JsonValueKind.True:
+                case JsonValueKind.False:
+                    var boolValue = jsonNode.GetBoolean();
+                    untypedNode = new UntypedBoolean(boolValue);
+                    break;
+                case JsonValueKind.Array:
+                    var arrayValue = GetCollectionOfUntypedValues(jsonNode);
+                    untypedNode = new UntypedArray(arrayValue);
+                    break;
+                case JsonValueKind.Object:
+                    var objectValue = GetPropertiesOfUntypedObject(jsonNode);
+                    untypedNode = new UntypedObject(objectValue);
+                    break;
+                case JsonValueKind.Null:
+                case JsonValueKind.Undefined:
+                    untypedNode = new UntypedNull();
+                    break;
+            }
+
+            return untypedNode;
         }
 
         /// <summary>
@@ -543,7 +503,7 @@ namespace Microsoft.Kiota.Serialization.Json
                 }
             }
         }
-        private static object? TryGetAnything(JsonElement element)
+        private object? TryGetAnything(JsonElement element)
         {
             switch(element.ValueKind)
             {
@@ -565,7 +525,7 @@ namespace Microsoft.Kiota.Serialization.Json
                     else return element.GetString();
                 case JsonValueKind.Array:
                 case JsonValueKind.Object:
-                    return element;
+                    return GetUntypedValue(element);
                 case JsonValueKind.True:
                     return true;
                 case JsonValueKind.False:

@@ -25,9 +25,9 @@ public class UntypedTestEntity : IParsable, IAdditionalDataHolder
         {
             { "id", node => Id = node.GetStringValue() },
             { "title", node => Title = node.GetStringValue() },
-            { "location", node => Location = node.GetObjectValue(UntypedNode.CreateFromDiscriminator) },
-            { "keywords", node => Keywords = node.GetObjectValue(UntypedNode.CreateFromDiscriminator) },
-            { "detail", node => Detail = node.GetObjectValue(UntypedNode.CreateFromDiscriminator) }
+            { "location", node => Location = node.GetObjectValue(UntypedNode.CreateFromDiscriminatorValue) },
+            { "keywords", node => Keywords = node.GetObjectValue(UntypedNode.CreateFromDiscriminatorValue) },
+            { "detail", node => Detail = node.GetObjectValue(UntypedNode.CreateFromDiscriminatorValue) }
         };
     }
     public void Serialize(ISerializationWriter writer)
@@ -39,7 +39,7 @@ public class UntypedTestEntity : IParsable, IAdditionalDataHolder
         writer.WriteObjectValue("detail", Detail);
         writer.WriteAdditionalData(AdditionalData);
     }
-    public static UntypedTestEntity CreateFromDiscriminator(IParseNode parseNode)
+    public static UntypedTestEntity CreateFromDiscriminatorValue(IParseNode parseNode)
     {
         var discriminatorValue = parseNode.GetChildNode("@odata.type")?.GetStringValue();
         return discriminatorValue switch
