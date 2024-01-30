@@ -101,7 +101,7 @@ namespace Microsoft.Kiota.Serialization.Json
         public DateTimeOffset? GetDateTimeOffsetValue()
         {
             // JsonElement.GetDateTimeOffset is super strict so try to be more lenient if it fails(e.g. when we have whitespace or other variant formats).
-            // ref - https://docs.microsoft.com/en-us/dotnet/standard/datetime/system-text-json-support
+            // ref - https://learn.microsoft.com/dotnet/standard/datetime/system-text-json-support
             if(!_jsonNode.TryGetDateTimeOffset(out var value))
                 value = DateTimeOffset.Parse(_jsonNode.GetString()!);
 

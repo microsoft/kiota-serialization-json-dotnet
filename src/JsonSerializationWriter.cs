@@ -237,7 +237,7 @@ namespace Microsoft.Kiota.Serialization.Json
         /// <param name="key">The key of the json node</param>
         /// <param name="value">The enumeration value</param>
 #if NET5_0_OR_GREATER
-        public void WriteEnumValue<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]T>(string? key, T? value) where T : struct, Enum
+        public void WriteEnumValue<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(string? key, T? value) where T : struct, Enum
 #else
         public void WriteEnumValue<T>(string? key, T? value) where T : struct, Enum
 #endif
@@ -246,7 +246,12 @@ namespace Microsoft.Kiota.Serialization.Json
             if(value.HasValue)
             {
                 if(typeof(T).GetCustomAttributes<FlagsAttribute>().Any())
-                    writer.WriteStringValue(Enum.GetValues(typeof(T))
+                    writer.WriteStringValue(
+#if NET5_0_OR_GREATER
+                        Enum.GetValues<T>()
+#else
+                        Enum.GetValues(typeof(T))
+#endif
                                             .Cast<T>()
                                             .Where(x => value.Value.HasFlag(x))
                                             .Select(GetEnumName)
@@ -316,7 +321,7 @@ namespace Microsoft.Kiota.Serialization.Json
         public void WriteByteArrayValue(string? key, byte[]? value)
         {
             if(value != null)//empty array is meaningful
-                WriteStringValue(key, value.Any() ? Convert.ToBase64String(value) : string.Empty);
+                WriteStringValue(key, value.Length > 0 ? Convert.ToBase64String(value) : string.Empty);
         }
 
         /// <summary>
@@ -328,7 +333,7 @@ namespace Microsoft.Kiota.Serialization.Json
         public void WriteObjectValue<T>(string? key, T? value, params IParsable?[] additionalValuesToMerge) where T : IParsable
         {
             var filteredAdditionalValuesToMerge = additionalValuesToMerge.OfType<IParsable>().ToArray();
-            if(value != null || filteredAdditionalValuesToMerge.Any())
+            if(value != null || filteredAdditionalValuesToMerge.Length > 0)
             {
                 if(!string.IsNullOrEmpty(key)) writer.WritePropertyName(key!);
                 if(value != null) OnBeforeObjectSerialization?.Invoke(value);
@@ -452,7 +457,7 @@ namespace Microsoft.Kiota.Serialization.Json
             GC.SuppressFinalize(this);
         }
 #if NET5_0_OR_GREATER
-        private static string? GetEnumName<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]T>(T value) where T : struct, Enum
+        private static string? GetEnumName<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] T>(T value) where T : struct, Enum
 #else
         private static string? GetEnumName<T>(T value) where T : struct, Enum
 #endif
@@ -462,7 +467,7 @@ namespace Microsoft.Kiota.Serialization.Json
             if (Enum.GetName(type, value) is not { } name)
                 throw new ArgumentException($"Invalid Enum value {value} for enum of type {type}");
             
-            if (type.GetMember(name).FirstOrDefault()?.GetCustomAttribute<EnumMemberAttribute>() is { } attribute)
+            if (type.GetField(name)?.GetCustomAttribute<EnumMemberAttribute>() is { } attribute)
                 return attribute.Value;
             
             return name.ToFirstCharacterLowerCase();
