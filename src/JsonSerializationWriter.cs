@@ -251,11 +251,11 @@ namespace Microsoft.Kiota.Serialization.Json
                         Enum.GetValues<T>()
 #else
                         Enum.GetValues(typeof(T))
+                            .Cast<T>()
 #endif
-                                            .Cast<T>()
-                                            .Where(x => value.Value.HasFlag(x))
-                                            .Select(GetEnumName)
-                                            .Aggregate((x, y) => $"{x},{y}"));
+                            .Where(x => value.Value.HasFlag(x))
+                            .Select(GetEnumName)
+                            .Aggregate((x, y) => $"{x},{y}"));
                 else writer.WriteStringValue(GetEnumName(value.Value));
             }
         }
