@@ -492,25 +492,25 @@ namespace Microsoft.Kiota.Serialization.Json
             switch(value)
             {
                 case UntypedString:
-                    WriteStringValue(key, value.GetValue() as string);
+                    WriteStringValue(key, ((UntypedString)value).GetValue());
                     break;
                 case UntypedBoolean:
-                    WriteBoolValue(key, value.GetValue() as bool?);
+                    WriteBoolValue(key, ((UntypedBoolean)value).GetValue());
                     break;
                 case UntypedInteger:
-                    WriteIntValue(key, value.GetValue() as int?);
+                    WriteIntValue(key, ((UntypedInteger)value).GetValue());
                     break;
                 case UntypedLong:
-                    WriteLongValue(key, value.GetValue() as long?);
+                    WriteLongValue(key, ((UntypedLong)value).GetValue());
                     break;
                 case UntypedDecimal:
-                    WriteDecimalValue(key, value.GetValue() as decimal?);
+                    WriteDecimalValue(key, ((UntypedDecimal)value).GetValue());
                     break;
                 case UntypedFloat:
-                    WriteFloatValue(key, value.GetValue() as float?);
+                    WriteFloatValue(key, ((UntypedFloat)value).GetValue());
                     break;
                 case UntypedDouble:
-                    WriteDoubleValue(key, value.GetValue() as double?);
+                    WriteDoubleValue(key, ((UntypedDouble)value).GetValue());
                     break;
                 case UntypedObject:
                     WriteUntypedObject(key, (UntypedObject)value);
@@ -535,7 +535,7 @@ namespace Microsoft.Kiota.Serialization.Json
             {
                 if(!string.IsNullOrEmpty(key)) writer.WritePropertyName(key!);
                 writer.WriteStartObject();
-                foreach(var item in (IDictionary<string, UntypedNode>)value.GetValue())
+                foreach(var item in value.GetValue())
                     WriteUntypedValue(item.Key, item.Value);
                 writer.WriteEndObject();
             }
@@ -552,7 +552,7 @@ namespace Microsoft.Kiota.Serialization.Json
             {
                 if(!string.IsNullOrEmpty(key)) writer.WritePropertyName(key!);
                 writer.WriteStartArray();
-                foreach(var item in (IEnumerable<UntypedNode>)array.GetValue())
+                foreach(var item in array.GetValue())
                     WriteUntypedValue(null, item);
                 writer.WriteEndArray();
             }

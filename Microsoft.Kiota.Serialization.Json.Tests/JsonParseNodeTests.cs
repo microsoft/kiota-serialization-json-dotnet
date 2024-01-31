@@ -196,7 +196,7 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             Assert.NotNull(entity.Location);
             Assert.IsType<UntypedObject>(entity.Location); // creates untyped object
             var location = (UntypedObject)entity.Location;
-            var locationProperties = (IDictionary<string, UntypedNode>)location.GetValue();
+            var locationProperties = location.GetValue();
             Assert.IsType<UntypedObject>(locationProperties["address"]);
             Assert.IsType<UntypedString>(locationProperties["displayName"]); // creates untyped string
             Assert.IsType<UntypedInteger>(locationProperties["floorCount"]); // creates untyped number
@@ -204,16 +204,16 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             Assert.IsType<UntypedNull>(locationProperties["contact"]); // creates untyped null
             Assert.IsType<UntypedObject>(locationProperties["coordinates"]); // creates untyped null
             var coordinates = (UntypedObject)locationProperties["coordinates"];
-            var coordinatesProperties = (IDictionary<string, UntypedNode>)coordinates.GetValue();
+            var coordinatesProperties = coordinates.GetValue();
             Assert.IsType<UntypedDecimal>(coordinatesProperties["latitude"]); // creates untyped decimal
             Assert.IsType<UntypedDecimal>(coordinatesProperties["longitude"]);
             Assert.Equal("Microsoft Building 92", ((UntypedString)locationProperties["displayName"]).GetValue());
             Assert.Equal(50, ((UntypedInteger)locationProperties["floorCount"]).GetValue());
-            Assert.True(((UntypedBoolean)locationProperties["hasReception"]).GetValue() as bool?);
-            Assert.Null(locationProperties["contact"].GetValue());
+            Assert.True(((UntypedBoolean)locationProperties["hasReception"]).GetValue());
+            Assert.Null(((UntypedNull)locationProperties["contact"]).GetValue());
             Assert.NotNull(entity.Keywords);
             Assert.IsType<UntypedArray>(entity.Keywords); // creates untyped array
-            Assert.Equal(2, ((IEnumerable<UntypedNode>)((UntypedArray)entity.Keywords).GetValue()).Count());
+            Assert.Equal(2, ((UntypedArray)entity.Keywords).GetValue().Count());
             Assert.Null(entity.Detail);
             var extra = entity.AdditionalData["extra"];
             Assert.NotNull(extra);
