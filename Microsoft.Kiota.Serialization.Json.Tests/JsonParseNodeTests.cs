@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using Microsoft.Kiota.Abstractions;
@@ -233,25 +234,26 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             Assert.Equal("5", entity.Id);
             Assert.Equal("Project 101", entity.Title);
             Assert.NotNull(entity.Location);
-            Assert.Null(entity.Location.Value);
             Assert.IsType<UntypedObject>(entity.Location); // creates untyped object
             var location = (UntypedObject)entity.Location;
-            Assert.IsType<UntypedObject>(location.Properties["address"]);
-            Assert.IsType<UntypedString>(location.Properties["displayName"]); // creates untyped string
-            Assert.IsType<UntypedInteger>(location.Properties["floorCount"]); // creates untyped number
-            Assert.IsType<UntypedBoolean>(location.Properties["hasReception"]); // creates untyped boolean
-            Assert.IsType<UntypedNull>(location.Properties["contact"]); // creates untyped null
-            Assert.IsType<UntypedObject>(location.Properties["coordinates"]); // creates untyped null
-            var coordinates = (UntypedObject)location.Properties["coordinates"];
-            Assert.IsType<UntypedDecimal>(coordinates.Properties["latitude"]); // creates untyped decimal
-            Assert.IsType<UntypedDecimal>(coordinates.Properties["longitude"]);
-            Assert.Equal("Microsoft Building 92", ((UntypedString)location.Properties["displayName"]).Value);
-            Assert.Equal(50, ((UntypedInteger)location.Properties["floorCount"]).Value);
-            Assert.True(((UntypedBoolean)location.Properties["hasReception"]).Value);
-            Assert.Null(location.Properties["contact"].Value);
+            var locationProperties = (IDictionary<string, UntypedNode>)location.GetValue();
+            Assert.IsType<UntypedObject>(locationProperties["address"]);
+            Assert.IsType<UntypedString>(locationProperties["displayName"]); // creates untyped string
+            Assert.IsType<UntypedInteger>(locationProperties["floorCount"]); // creates untyped number
+            Assert.IsType<UntypedBoolean>(locationProperties["hasReception"]); // creates untyped boolean
+            Assert.IsType<UntypedNull>(locationProperties["contact"]); // creates untyped null
+            Assert.IsType<UntypedObject>(locationProperties["coordinates"]); // creates untyped null
+            var coordinates = (UntypedObject)locationProperties["coordinates"];
+            var coordinatesProperties = (IDictionary<string, UntypedNode>)coordinates.GetValue();
+            Assert.IsType<UntypedDecimal>(coordinatesProperties["latitude"]); // creates untyped decimal
+            Assert.IsType<UntypedDecimal>(coordinatesProperties["longitude"]);
+            Assert.Equal("Microsoft Building 92", ((UntypedString)locationProperties["displayName"]).GetValue());
+            Assert.Equal(50, ((UntypedInteger)locationProperties["floorCount"]).GetValue());
+            Assert.True(((UntypedBoolean)locationProperties["hasReception"]).GetValue() as bool?);
+            Assert.Null(locationProperties["contact"].GetValue());
             Assert.NotNull(entity.Keywords);
             Assert.IsType<UntypedArray>(entity.Keywords); // creates untyped array
-            Assert.Equal(2, ((UntypedArray)entity.Keywords).Value.Count());
+            Assert.Equal(2, ((IEnumerable<UntypedNode>)((UntypedArray)entity.Keywords).GetValue()).Count());
             Assert.Null(entity.Detail);
             var extra = entity.AdditionalData["extra"];
             Assert.NotNull(extra);
