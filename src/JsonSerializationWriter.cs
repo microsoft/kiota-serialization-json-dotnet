@@ -58,7 +58,8 @@ namespace Microsoft.Kiota.Serialization.Json
         /// Get the stream of the serialized content
         /// </summary>
         /// <returns>The <see cref="Stream"/> of the serialized content</returns>
-        public Stream GetSerializedContent() {
+        public Stream GetSerializedContent()
+        {
             writer.Flush();
             _stream.Position = 0;
             return _stream;
@@ -237,7 +238,7 @@ namespace Microsoft.Kiota.Serialization.Json
         /// <param name="key">The key of the json node</param>
         /// <param name="value">The enumeration value</param>
 #if NET5_0_OR_GREATER
-        public void WriteEnumValue<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(string? key, T? value) where T : struct, Enum
+        public void WriteEnumValue<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] T>(string? key, T? value) where T : struct, Enum
 #else
         public void WriteEnumValue<T>(string? key, T? value) where T : struct, Enum
 #endif
@@ -299,7 +300,7 @@ namespace Microsoft.Kiota.Serialization.Json
         /// <param name="key">The key to be used for the written value. May be null.</param>
         /// <param name="values">The enum values to be written.</param>
 #if NET5_0_OR_GREATER
-        public void WriteCollectionOfEnumValues<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]T>(string? key, IEnumerable<T?>? values) where T : struct, Enum
+        public void WriteCollectionOfEnumValues<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)]T>(string? key, IEnumerable<T?>? values) where T : struct, Enum
 #else
         public void WriteCollectionOfEnumValues<T>(string? key, IEnumerable<T?>? values) where T : struct, Enum
 #endif
@@ -338,9 +339,10 @@ namespace Microsoft.Kiota.Serialization.Json
                 if(!string.IsNullOrEmpty(key)) writer.WritePropertyName(key!);
                 if(value != null) OnBeforeObjectSerialization?.Invoke(value);
                 var serializingScalarValue = value is IComposedTypeWrapper;
-                if (!serializingScalarValue)
+                if(!serializingScalarValue)
                     writer.WriteStartObject();
-                if(value != null) {
+                if(value != null)
+                {
                     OnStartObjectSerialization?.Invoke(value, this);
                     value.Serialize(this);
                 }
@@ -351,7 +353,7 @@ namespace Microsoft.Kiota.Serialization.Json
                     additionalValueToMerge!.Serialize(this);
                     OnAfterObjectSerialization?.Invoke(additionalValueToMerge);
                 }
-                if (!serializingScalarValue)
+                if(!serializingScalarValue)
                     writer.WriteEndObject();
                 if(value != null) OnAfterObjectSerialization?.Invoke(value);
             }
@@ -464,12 +466,12 @@ namespace Microsoft.Kiota.Serialization.Json
         {
             var type = typeof(T);
 
-            if (Enum.GetName(type, value) is not { } name)
+            if(Enum.GetName(type, value) is not { } name)
                 throw new ArgumentException($"Invalid Enum value {value} for enum of type {type}");
-            
-            if (type.GetField(name)?.GetCustomAttribute<EnumMemberAttribute>() is { } attribute)
+
+            if(type.GetField(name)?.GetCustomAttribute<EnumMemberAttribute>() is { } attribute)
                 return attribute.Value;
-            
+
             return name.ToFirstCharacterLowerCase();
         }
     }
