@@ -58,7 +58,8 @@ namespace Microsoft.Kiota.Serialization.Json
         /// Get the stream of the serialized content
         /// </summary>
         /// <returns>The <see cref="Stream"/> of the serialized content</returns>
-        public Stream GetSerializedContent() {
+        public Stream GetSerializedContent()
+        {
             writer.Flush();
             _stream.Position = 0;
             return _stream;
@@ -338,9 +339,10 @@ namespace Microsoft.Kiota.Serialization.Json
                 if(!string.IsNullOrEmpty(key)) writer.WritePropertyName(key!);
                 if(value != null) OnBeforeObjectSerialization?.Invoke(value);
                 var serializingScalarValue = value is IComposedTypeWrapper;
-                if (!serializingScalarValue)
+                if(!serializingScalarValue)
                     writer.WriteStartObject();
-                if(value != null) {
+                if(value != null)
+                {
                     OnStartObjectSerialization?.Invoke(value, this);
                     value.Serialize(this);
                 }
@@ -351,7 +353,7 @@ namespace Microsoft.Kiota.Serialization.Json
                     additionalValueToMerge!.Serialize(this);
                     OnAfterObjectSerialization?.Invoke(additionalValueToMerge);
                 }
-                if (!serializingScalarValue)
+                if(!serializingScalarValue)
                     writer.WriteEndObject();
                 if(value != null) OnAfterObjectSerialization?.Invoke(value);
             }
@@ -464,12 +466,12 @@ namespace Microsoft.Kiota.Serialization.Json
         {
             var type = typeof(T);
 
-            if (Enum.GetName(type, value) is not { } name)
+            if(Enum.GetName(type, value) is not { } name)
                 throw new ArgumentException($"Invalid Enum value {value} for enum of type {type}");
-            
-            if (type.GetField(name)?.GetCustomAttribute<EnumMemberAttribute>() is { } attribute)
+
+            if(type.GetField(name)?.GetCustomAttribute<EnumMemberAttribute>() is { } attribute)
                 return attribute.Value;
-            
+
             return name.ToFirstCharacterLowerCase();
         }
     }
