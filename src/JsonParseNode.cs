@@ -181,9 +181,15 @@ namespace Microsoft.Kiota.Serialization.Json
         /// </summary>
         /// <param name="factory">The factory to use to create the model object.</param>
         /// <returns>A collection of objects</returns>
-        public IEnumerable<T> GetCollectionOfObjectValues<T>(ParsableFactory<T> factory) where T : IParsable
+        public IEnumerable<T>? GetCollectionOfObjectValues<T>(ParsableFactory<T> factory) where T : IParsable
         {
-            if (_jsonNode.ValueKind == JsonValueKind.Array) {
+            if(_jsonNode.ValueKind != JsonValueKind.Array)
+                return null;
+
+            return ArrayToEnumerable();
+
+            IEnumerable<T> ArrayToEnumerable()
+            {
                 var enumerator = _jsonNode.EnumerateArray();
                 while(enumerator.MoveNext())
                 {
@@ -201,12 +207,18 @@ namespace Microsoft.Kiota.Serialization.Json
         /// </summary>
         /// <returns>The collection of enum values.</returns>
 #if NET5_0_OR_GREATER
-        public IEnumerable<T?> GetCollectionOfEnumValues<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]T>() where T : struct, Enum
+        public IEnumerable<T?>? GetCollectionOfEnumValues<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]T>() where T : struct, Enum
 #else
-        public IEnumerable<T?> GetCollectionOfEnumValues<T>() where T : struct, Enum
+        public IEnumerable<T?>? GetCollectionOfEnumValues<T>() where T : struct, Enum
 #endif
         {
-            if (_jsonNode.ValueKind == JsonValueKind.Array) {
+            if(_jsonNode.ValueKind != JsonValueKind.Array)
+                return null;
+
+            return ArrayToEnumerable();
+
+            IEnumerable<T?> ArrayToEnumerable()
+            {
                 var enumerator = _jsonNode.EnumerateArray();
                 while(enumerator.MoveNext())
                 {
@@ -246,9 +258,15 @@ namespace Microsoft.Kiota.Serialization.Json
         /// Get the collection of primitives of type <typeparam name="T"/>from the json node
         /// </summary>
         /// <returns>A collection of objects</returns>
-        public IEnumerable<T> GetCollectionOfPrimitiveValues<T>()
+        public IEnumerable<T>? GetCollectionOfPrimitiveValues<T>()
         {
-            if (_jsonNode.ValueKind == JsonValueKind.Array) {
+            if(_jsonNode.ValueKind != JsonValueKind.Array)
+                return null;
+
+            return ArrayToEnumerable();
+
+            IEnumerable<T> ArrayToEnumerable()
+            {
                 var genericType = typeof(T);
                 foreach(var collectionValue in _jsonNode.EnumerateArray())
                 {
