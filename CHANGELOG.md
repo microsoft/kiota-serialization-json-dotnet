@@ -7,12 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Add ability to use `JsonSerializerContext` (and `JsonSerialzerOptions`) when serializing and deserializing
+
 ## [1.1.6] - 2024-02-26
 
 ### Changed
 
 - Added `net6.0` and `net8.0` as target frameworks.
-- 
+
 ## [1.1.5] - 2024-02-05
 
 ### Changed

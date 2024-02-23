@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Kiota.Abstractions;
+using Microsoft.Kiota.Serialization.Json.Tests.Converters;
 using Microsoft.Kiota.Serialization.Json.Tests.Mocks;
 using Xunit;
 
@@ -200,5 +201,49 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             Assert.Equal(expectedString, serializedJsonString);
         }
 
+        [Fact]
+        public void WriteGuidUsingConverter()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var testEntity = new ConverterTestEntity { Id = id };
+            var serializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.General)
+            {
+                Converters = { new JsonGuidConverter() }
+            };
+            var serializationContext = new KiotaJsonSerializationContext(serializerOptions);
+            using var jsonSerializerWriter = new JsonSerializationWriter(serializationContext);
+
+            // Act
+            jsonSerializerWriter.WriteObjectValue(string.Empty, testEntity);
+            var serializedStream = jsonSerializerWriter.GetSerializedContent();
+            using var reader = new StreamReader(serializedStream, Encoding.UTF8);
+            var serializedJsonString = reader.ReadToEnd();
+            
+            // Assert
+            var expectedString = $"{{\"id\":\"{id:N}\"}}";
+            Assert.Equal(expectedString, serializedJsonString);
+        }
+        
+        [Fact]
+        public void WriteGuidUsingNoConverter()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var testEntity = new ConverterTestEntity { Id = id };
+            var serializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.General);
+            var serializationContext = new KiotaJsonSerializationContext(serializerOptions);
+            using var jsonSerializerWriter = new JsonSerializationWriter(serializationContext);
+
+            // Act
+            jsonSerializerWriter.WriteObjectValue(string.Empty, testEntity);
+            var serializedStream = jsonSerializerWriter.GetSerializedContent();
+            using var reader = new StreamReader(serializedStream, Encoding.UTF8);
+            var serializedJsonString = reader.ReadToEnd();
+            
+            // Assert
+            var expectedString = $"{{\"id\":\"{id:D}\"}}";
+            Assert.Equal(expectedString, serializedJsonString);
+        }
     }
 }

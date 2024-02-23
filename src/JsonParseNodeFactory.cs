@@ -14,6 +14,25 @@ namespace Microsoft.Kiota.Serialization.Json
     /// </summary>
     public class JsonParseNodeFactory : IParseNodeFactory
     {
+        private readonly KiotaJsonSerializationContext _jsonJsonSerializationContext;
+
+        /// <summary>
+        /// The <see cref="JsonParseNodeFactory"/> constructor.
+        /// </summary>
+        public JsonParseNodeFactory()
+            : this(KiotaJsonSerializationContext.Default)
+        {
+        }
+
+        /// <summary>
+        /// The <see cref="JsonParseNodeFactory"/> constructor. 
+        /// </summary>
+        /// <param name="jsonJsonSerializationContext">The KiotaSerializationContext to utilize.</param>
+        public JsonParseNodeFactory(KiotaJsonSerializationContext jsonJsonSerializationContext)
+        {
+            _jsonJsonSerializationContext = jsonJsonSerializationContext;
+        }
+        
         /// <summary>
         /// The valid content type for json
         /// </summary>
@@ -35,7 +54,7 @@ namespace Microsoft.Kiota.Serialization.Json
             _ = content ?? throw new ArgumentNullException(nameof(content));
 
             using var jsonDocument = JsonDocument.Parse(content);
-            return new JsonParseNode(jsonDocument.RootElement.Clone());
+            return new JsonParseNode(jsonDocument.RootElement.Clone(), _jsonJsonSerializationContext);
         }
     }
 }

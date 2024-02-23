@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.Json;
 using Microsoft.Kiota.Abstractions;
+using Microsoft.Kiota.Serialization.Json.Tests.Converters;
 using Microsoft.Kiota.Serialization.Json.Tests.Mocks;
 using Xunit;
 
@@ -137,6 +138,45 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             var imaginaryNode = rootParseNode.GetChildNode("imaginaryNode");
             // Assert
             Assert.Null(imaginaryNode);
+        }
+
+        [Fact]
+        public void ParseGuidWithConverter()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var json = $"{{\"id\": \"{id:N}\"}}";
+            var serializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.General)
+            {
+                Converters = { new JsonGuidConverter() }
+            };
+            var serializationContext = new KiotaJsonSerializationContext(serializerOptions);
+            using var jsonDocument = JsonDocument.Parse(json);
+            var rootParseNode = new JsonParseNode(jsonDocument.RootElement, serializationContext);
+            
+            // Act
+            var entity = rootParseNode.GetObjectValue(_ => new ConverterTestEntity());
+            
+            // Assert
+            Assert.Equal(id, entity.Id);
+        }
+        
+        [Fact]
+        public void ParseGuidWithoutConverter()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var json = $"{{\"id\": \"{id:D}\"}}";
+            var serializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.General);
+            var serializationContext = new KiotaJsonSerializationContext(serializerOptions);
+            using var jsonDocument = JsonDocument.Parse(json);
+            var rootParseNode = new JsonParseNode(jsonDocument.RootElement, serializationContext);
+            
+            // Act
+            var entity = rootParseNode.GetObjectValue(_ => new ConverterTestEntity());
+            
+            // Assert
+            Assert.Equal(id, entity.Id);
         }
     }
 }
