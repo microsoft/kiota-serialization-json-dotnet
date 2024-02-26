@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.7] - 2024-02-26
+
 - Add ability to use `JsonSerializerContext` (and `JsonSerialzerOptions`) when serializing and deserializing
 
-## [1.1.6] - 2024-02-26
+## [1.1.6] - 2024-02-23
 
 ### Changed
 
