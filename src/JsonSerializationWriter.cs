@@ -421,6 +421,7 @@ namespace Microsoft.Kiota.Serialization.Json
                     WriteAnyValue(oProp.Name, oProp.GetValue(value));
             writer.WriteEndObject();
         }
+
         private void WriteAnyValue<T>(string? key, T value)
         {
             switch(value)
