@@ -12,6 +12,25 @@ namespace Microsoft.Kiota.Serialization.Json
     /// </summary>
     public class JsonSerializationWriterFactory : ISerializationWriterFactory
     {
+        private readonly KiotaJsonSerializationContext _kiotaJsonSerializationContext;
+
+        /// <summary>
+        /// The <see cref="JsonSerializationWriterFactory"/> constructor.
+        /// </summary>
+        public JsonSerializationWriterFactory()
+            : this(KiotaJsonSerializationContext.Default)
+        {
+        }
+
+        /// <summary>
+        /// The <see cref="JsonSerializationWriterFactory"/> constructor.
+        /// </summary>
+        /// <param name="kiotaJsonSerializationContext">The KiotaJsonSerializationContext to use.</param>
+        public JsonSerializationWriterFactory(KiotaJsonSerializationContext kiotaJsonSerializationContext)
+        {
+            _kiotaJsonSerializationContext = kiotaJsonSerializationContext;
+        }
+        
         /// <summary>
         /// The valid content type for json
         /// </summary>
@@ -29,7 +48,7 @@ namespace Microsoft.Kiota.Serialization.Json
             else if(!ValidContentType.Equals(contentType, StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentOutOfRangeException($"expected a {ValidContentType} content type");
 
-            return new JsonSerializationWriter();
+            return new JsonSerializationWriter(_kiotaJsonSerializationContext);
         }
     }
 }
