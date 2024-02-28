@@ -63,8 +63,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.Kiota.Abstractions">
-      <HintPath>..\..\kiota-abstractions-dotnet\src\bin\Debug\netstandard2.0\Microsoft.Kiota.Abstractions.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\kiota-abstractions-dotnet\src\Microsoft.Kiota.Abstractions.csproj" />
   </ItemGroup>
 </Project>
