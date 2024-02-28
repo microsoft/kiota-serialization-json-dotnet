@@ -376,7 +376,7 @@ namespace Microsoft.Kiota.Serialization.Json
             }
             return properties;
         }
-
+        private UntypedNode? GetUntypedValue() => GetUntypedValue(_jsonNode);
         private UntypedNode? GetUntypedValue(JsonElement jsonNode)
         {
             UntypedNode? untypedNode = null;
