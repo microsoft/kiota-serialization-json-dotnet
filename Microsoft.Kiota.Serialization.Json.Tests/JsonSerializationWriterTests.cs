@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Kiota.Abstractions;
+using Microsoft.Kiota.Serialization.Json.Tests.Converters;
 using Microsoft.Kiota.Abstractions.Serialization;
 using Microsoft.Kiota.Serialization.Json.Tests.Mocks;
 using Xunit;
@@ -22,12 +23,14 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
                 WorkDuration = TimeSpan.FromHours(1),
                 StartWorkTime = new Time(8, 0, 0),
                 BirthDay = new Date(2017, 9, 4),
+                HeightInMetres = 1.80m,
                 AdditionalData = new Dictionary<string, object>
                 {
                     {"mobilePhone",null}, // write null value
                     {"accountEnabled",false}, // write bool value
                     {"jobTitle","Author"}, // write string value
                     {"createdDateTime", DateTimeOffset.MinValue}, // write date value
+                    {"weightInKgs", 51.80m}, // write weigth
                     {"businessPhones", new List<string>() {"+1 412 555 0109"}}, // write collection of primitives value
                     {"endDateTime", new DateTime(2023,03,14,0,0,0,DateTimeKind.Utc) }, // ensure the DateTime doesn't crash
                     {"manager", new TestEntity{Id = "48d31887-5fad-4d73-a9f5-3c356e68a038"}}, // write nested object value
@@ -46,11 +49,13 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
                                  "\"id\":\"48d31887-5fad-4d73-a9f5-3c356e68a038\"," +
                                  "\"workDuration\":\"PT1H\","+    // Serializes timespans
                                  "\"birthDay\":\"2017-09-04\"," + // Serializes dates
+                                 "\"heightInMetres\":1.80,"+
                                  "\"startWorkTime\":\"08:00:00\"," + //Serializes times
                                  "\"mobilePhone\":null," +
                                  "\"accountEnabled\":false," +
                                  "\"jobTitle\":\"Author\"," +
                                  "\"createdDateTime\":\"0001-01-01T00:00:00+00:00\"," +
+                                 "\"weightInKgs\":51.80,"+
                                  "\"businessPhones\":[\"\\u002B1 412 555 0109\"]," +
                                  "\"endDateTime\":\"2023-03-14T00:00:00+00:00\"," +
                                  "\"manager\":{\"id\":\"48d31887-5fad-4d73-a9f5-3c356e68a038\"}" +
@@ -197,6 +202,50 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             Assert.Equal(expectedString, serializedJsonString);
         }
 
+        [Fact]
+        public void WriteGuidUsingConverter()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var testEntity = new ConverterTestEntity { Id = id };
+            var serializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.General)
+            {
+                Converters = { new JsonGuidConverter() }
+            };
+            var serializationContext = new KiotaJsonSerializationContext(serializerOptions);
+            using var jsonSerializerWriter = new JsonSerializationWriter(serializationContext);
+
+            // Act
+            jsonSerializerWriter.WriteObjectValue(string.Empty, testEntity);
+            var serializedStream = jsonSerializerWriter.GetSerializedContent();
+            using var reader = new StreamReader(serializedStream, Encoding.UTF8);
+            var serializedJsonString = reader.ReadToEnd();
+            
+            // Assert
+            var expectedString = $"{{\"id\":\"{id:N}\"}}";
+            Assert.Equal(expectedString, serializedJsonString);
+        }
+        
+        [Fact]
+        public void WriteGuidUsingNoConverter()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var testEntity = new ConverterTestEntity { Id = id };
+            var serializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.General);
+            var serializationContext = new KiotaJsonSerializationContext(serializerOptions);
+            using var jsonSerializerWriter = new JsonSerializationWriter(serializationContext);
+
+            // Act
+            jsonSerializerWriter.WriteObjectValue(string.Empty, testEntity);
+            var serializedStream = jsonSerializerWriter.GetSerializedContent();
+            using var reader = new StreamReader(serializedStream, Encoding.UTF8);
+            var serializedJsonString = reader.ReadToEnd();
+            
+            // Assert
+            var expectedString = $"{{\"id\":\"{id:D}\"}}";
+            Assert.Equal(expectedString, serializedJsonString);
+        }
         [Fact]
         public void WritesSampleObjectValueWithUntypedProperties()
         {

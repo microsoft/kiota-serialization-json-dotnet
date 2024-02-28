@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.8] - 2024-02-27
+
+- Reduced `DynamicallyAccessedMembers` scope for enum methods to prevent ILC warnings.
+
+## [1.1.7] - 2024-02-26
+
+- Add ability to use `JsonSerializerContext` (and `JsonSerialzerOptions`) when serializing and deserializing
+
+## [1.1.6] - 2024-02-23
+
+### Changed
+
+- Added `net6.0` and `net8.0` as target frameworks.
+
+## [1.1.5] - 2024-02-05
+
+### Changed
+
+- Fixes `IsTrimmable` property on the project.
+
+## [1.1.4] - 2024-01-30
+
+### Changed
+
+- Fixed AOT warnings caused by reflection on enum types.
+
+## [1.1.3] - 2024-01-29
+
+### Changed
+
+- Fixed a bug where serialization of decimal values would write them as empty objects.
+
 ### Added
 
 ## [1.1.2] - 2023-11-15
