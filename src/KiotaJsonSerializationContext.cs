@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Kiota.Abstractions;
 
@@ -35,4 +36,5 @@ namespace Microsoft.Kiota.Serialization.Json;
 [JsonSerializable(typeof(Date?))]
 [JsonSerializable(typeof(Time))]
 [JsonSerializable(typeof(Time?))]
+[JsonSerializable(typeof(JsonElement))]
 public partial class KiotaJsonSerializationContext : JsonSerializerContext;

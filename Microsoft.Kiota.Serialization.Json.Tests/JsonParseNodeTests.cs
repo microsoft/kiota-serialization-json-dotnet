@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Linq;
 using System.Text.Json;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Loggers;
+using BenchmarkDotNet.Running;
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Serialization.Json.Tests.Converters;
 using Microsoft.Kiota.Serialization.Json.Tests.Mocks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Microsoft.Kiota.Serialization.Json.Tests
 {
-    public class JsonParseNodeTests
+    public class JsonParseNodeTests(ITestOutputHelper output)
     {
-        private const string TestUserJson = "{\r\n" +
+        private readonly ITestOutputHelper output = output;
+
+        internal const string TestUserJson = "{\r\n" +
                                             "    \"@odata.context\": \"https://graph.microsoft.com/v1.0/$metadata#users/$entity\",\r\n" +
                                             "    \"@odata.id\": \"https://graph.microsoft.com/v2/dcd219dd-bc68-4b9b-bf0b-4a33a796be35/directoryObjects/48d31887-5fad-4d73-a9f5-3c356e68a038/Microsoft.DirectoryServices.User\",\r\n" +
                                             "    \"businessPhones\": [\r\n" +
@@ -178,5 +184,25 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             // Assert
             Assert.Equal(id, entity.Id);
         }
+
+        [Fact]
+        public void BenchMarkParseNodes()
+        {
+            
+            var logger = new AccumulationLogger();
+
+            var config = ManualConfig.Create(DefaultConfig.Instance)
+                .AddLogger(logger)
+                .WithOptions(ConfigOptions.DisableOptimizationsValidator);
+
+            var summary = BenchmarkRunner.Run<ParseNodeBenchmark>(config);
+
+            // write benchmark summary
+            output.WriteLine(logger.GetLog());
+
+            Assert.NotNull(summary);
+
+        }
+
     }
 }

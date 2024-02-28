@@ -52,9 +52,8 @@ namespace Microsoft.Kiota.Serialization.Json
                 throw new ArgumentOutOfRangeException($"expected a {ValidContentType} content type");
 
             _ = content ?? throw new ArgumentNullException(nameof(content));
-
-            using var jsonDocument = JsonDocument.Parse(content);
-            return new JsonParseNode(jsonDocument.RootElement.Clone(), _jsonJsonSerializationContext);
+            var jsonElement = JsonSerializer.Deserialize(content, _jsonJsonSerializationContext.JsonElement);
+            return new JsonParseNode(jsonElement, _jsonJsonSerializationContext);
         }
     }
 }
