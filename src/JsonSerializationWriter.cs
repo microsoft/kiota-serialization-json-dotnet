@@ -373,16 +373,11 @@ namespace Microsoft.Kiota.Serialization.Json
             {
                 // until interface exposes WriteUntypedValue()
                 var serializingUntypedNode = value is UntypedNode;
-                if(!serializingUntypedNode && !string.IsNullOrEmpty(key)) writer.WritePropertyName(key!);
-                if(value != null) OnBeforeObjectSerialization?.Invoke(value);
-                var serializingScalarValue = value is IComposedTypeWrapper;
-                if(!serializingScalarValue)
-                    writer.WriteStartObject();
-                if(value != null)
-                {
-                    OnStartObjectSerialization?.Invoke(value, this);
-                    value.Serialize(this);
-                }
+                if(!serializingUntypedNode && !string.IsNullOrEmpty(key)) 
+                    writer.WritePropertyName(key!);
+                if(value != null) 
+                    OnBeforeObjectSerialization?.Invoke(value);
+
                 if(serializingUntypedNode)
                 {
                     var untypedNode = value as UntypedNode;
@@ -398,10 +393,8 @@ namespace Microsoft.Kiota.Serialization.Json
                     if(value != null)
                     {
                         OnStartObjectSerialization?.Invoke(value, this);
-
                         value.Serialize(this);
                     }
-
                     foreach(var additionalValueToMerge in filteredAdditionalValuesToMerge)
                     {
                         OnBeforeObjectSerialization?.Invoke(additionalValueToMerge!);
@@ -411,9 +404,7 @@ namespace Microsoft.Kiota.Serialization.Json
                     }
                     if(!serializingScalarValue)
                         writer.WriteEndObject();
-                }
-                if(!serializingScalarValue)
-                    writer.WriteEndObject();
+                }                
                 if(value != null) OnAfterObjectSerialization?.Invoke(value);
             }
         }

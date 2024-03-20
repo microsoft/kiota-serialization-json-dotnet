@@ -300,7 +300,7 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             };
             using var jsonSerializerWriter = new JsonSerializationWriter();
             // Act
-            jsonSerializerWriter.WriteObjectValue(null, untypedTestEntity);
+            jsonSerializerWriter.WriteObjectValue(string.Empty, untypedTestEntity);
             // Get the json string from the stream.
             var serializedStream = jsonSerializerWriter.GetSerializedContent();
             using var reader = new StreamReader(serializedStream, Encoding.UTF8);

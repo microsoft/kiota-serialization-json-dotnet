@@ -14,7 +14,7 @@
     <PackageProjectUrl>https://aka.ms/kiota/docs</PackageProjectUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <Deterministic>true</Deterministic>
-    <VersionPrefix>1.1.8</VersionPrefix>
+    <VersionPrefix>1.2.0</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -43,7 +43,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.7.12" />
+    <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.8.0" />
     <PackageReference Include="System.Text.Json" Version="[6.0,9.0)" />
   </ItemGroup>
 
@@ -60,11 +60,5 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Microsoft.Kiota.Abstractions">
-      <HintPath>..\..\kiota-abstractions-dotnet\src\bin\Debug\netstandard2.0\Microsoft.Kiota.Abstractions.dll</HintPath>
-    </Reference>
   </ItemGroup>
 </Project>
