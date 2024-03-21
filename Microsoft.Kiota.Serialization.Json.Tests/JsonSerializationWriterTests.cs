@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Kiota.Abstractions;
+using Microsoft.Kiota.Abstractions.Serialization;
 using Microsoft.Kiota.Serialization.Json.Tests.Converters;
 using Microsoft.Kiota.Serialization.Json.Tests.Mocks;
 using Xunit;
@@ -243,6 +244,83 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             
             // Assert
             var expectedString = $"{{\"id\":\"{id:D}\"}}";
+            Assert.Equal(expectedString, serializedJsonString);
+        }
+        [Fact]
+        public void WritesSampleObjectValueWithUntypedProperties()
+        {
+            // Arrange
+            var untypedTestEntity = new UntypedTestEntity
+            {
+                Id = "1",
+                Title = "Title",
+                Location = new UntypedObject(new Dictionary<string, UntypedNode>
+                    {
+                        {"address", new UntypedObject(new Dictionary<string, UntypedNode>
+                        {
+                            {"city", new UntypedString("Redmond") },
+                            {"postalCode", new UntypedString("98052") },
+                            {"state", new UntypedString("Washington") },
+                            {"street", new UntypedString("NE 36th St") }
+                        })},
+                        {"coordinates", new UntypedObject(new Dictionary<string, UntypedNode>
+                        {
+                            {"latitude", new UntypedDouble(47.641942d) },
+                            {"longitude", new UntypedDouble(-122.127222d) }
+                        })},
+                        {"displayName", new UntypedString("Microsoft Building 92") },
+                        {"floorCount", new UntypedInteger(50) },
+                        {"hasReception", new UntypedBoolean(true) },
+                        {"contact", new UntypedNull() }
+                    }),
+                Keywords = new UntypedArray(new List<UntypedNode>
+                {
+                    new UntypedObject(new Dictionary<string, UntypedNode>
+                    {
+                        {"created", new UntypedString("2023-07-26T10:41:26Z") },
+                        {"label", new UntypedString("Keyword1") },
+                        {"termGuid", new UntypedString("10e9cc83-b5a4-4c8d-8dab-4ada1252dd70") },
+                        {"wssId", new UntypedLong(6442450941) }
+                    }),
+                    new UntypedObject(new Dictionary<string, UntypedNode>
+                    {
+                        {"created", new UntypedString("2023-07-26T10:51:26Z") },
+                        {"label", new UntypedString("Keyword2") },
+                        {"termGuid", new UntypedString("2cae6c6a-9bb8-4a78-afff-81b88e735fef") },
+                        {"wssId", new UntypedLong(6442450942) }
+                    })
+                }),
+                AdditionalData = new Dictionary<string, object>
+                {
+                    { "extra", new UntypedObject(new Dictionary<string, UntypedNode>
+                    {
+                        {"createdDateTime", new UntypedString("2024-01-15T00:00:00+00:00") }
+                    }) }
+                }
+            };
+            using var jsonSerializerWriter = new JsonSerializationWriter();
+            // Act
+            jsonSerializerWriter.WriteObjectValue(string.Empty, untypedTestEntity);
+            // Get the json string from the stream.
+            var serializedStream = jsonSerializerWriter.GetSerializedContent();
+            using var reader = new StreamReader(serializedStream, Encoding.UTF8);
+            var serializedJsonString = reader.ReadToEnd();
+
+            // Assert
+            var expectedString = "{" +
+                "\"id\":\"1\"," +
+                "\"title\":\"Title\"," +
+                "\"location\":{" +
+                "\"address\":{\"city\":\"Redmond\",\"postalCode\":\"98052\",\"state\":\"Washington\",\"street\":\"NE 36th St\"}," +
+                "\"coordinates\":{\"latitude\":47.641942,\"longitude\":-122.127222}," +
+                "\"displayName\":\"Microsoft Building 92\"," +
+                "\"floorCount\":50," +
+                "\"hasReception\":true," +
+                "\"contact\":null}," +
+                "\"keywords\":[" +
+                "{\"created\":\"2023-07-26T10:41:26Z\",\"label\":\"Keyword1\",\"termGuid\":\"10e9cc83-b5a4-4c8d-8dab-4ada1252dd70\",\"wssId\":6442450941}," +
+                "{\"created\":\"2023-07-26T10:51:26Z\",\"label\":\"Keyword2\",\"termGuid\":\"2cae6c6a-9bb8-4a78-afff-81b88e735fef\",\"wssId\":6442450942}]," +
+                "\"extra\":{\"createdDateTime\":\"2024-01-15T00:00:00\\u002B00:00\"}}";
             Assert.Equal(expectedString, serializedJsonString);
         }
     }

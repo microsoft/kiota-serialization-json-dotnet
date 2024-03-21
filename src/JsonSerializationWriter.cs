@@ -371,27 +371,40 @@ namespace Microsoft.Kiota.Serialization.Json
             var filteredAdditionalValuesToMerge = additionalValuesToMerge.OfType<IParsable>().ToArray();
             if(value != null || filteredAdditionalValuesToMerge.Length > 0)
             {
-                if(!string.IsNullOrEmpty(key))
+                // until interface exposes WriteUntypedValue()
+                var serializingUntypedNode = value is UntypedNode;
+                if(!serializingUntypedNode && !string.IsNullOrEmpty(key)) 
                     writer.WritePropertyName(key!);
-                if(value != null)
+                if(value != null) 
                     OnBeforeObjectSerialization?.Invoke(value);
-                var serializingScalarValue = value is IComposedTypeWrapper;
-                if(!serializingScalarValue)
-                    writer.WriteStartObject();
-                if(value != null)
+
+                if(serializingUntypedNode)
                 {
-                    OnStartObjectSerialization?.Invoke(value, this);
-                    value.Serialize(this);
+                    var untypedNode = value as UntypedNode;
+                    OnStartObjectSerialization?.Invoke(untypedNode!, this);
+                    WriteUntypedValue(key, untypedNode);
+                    OnAfterObjectSerialization?.Invoke(untypedNode!);
                 }
-                foreach(var additionalValueToMerge in filteredAdditionalValuesToMerge)
+                else
                 {
-                    OnBeforeObjectSerialization?.Invoke(additionalValueToMerge!);
-                    OnStartObjectSerialization?.Invoke(additionalValueToMerge!, this);
-                    additionalValueToMerge!.Serialize(this);
-                    OnAfterObjectSerialization?.Invoke(additionalValueToMerge);
-                }
-                if(!serializingScalarValue)
-                    writer.WriteEndObject();
+                    var serializingScalarValue = value is IComposedTypeWrapper;
+                    if(!serializingScalarValue)
+                        writer.WriteStartObject();
+                    if(value != null)
+                    {
+                        OnStartObjectSerialization?.Invoke(value, this);
+                        value.Serialize(this);
+                    }
+                    foreach(var additionalValueToMerge in filteredAdditionalValuesToMerge)
+                    {
+                        OnBeforeObjectSerialization?.Invoke(additionalValueToMerge!);
+                        OnStartObjectSerialization?.Invoke(additionalValueToMerge!, this);
+                        additionalValueToMerge!.Serialize(this);
+                        OnAfterObjectSerialization?.Invoke(additionalValueToMerge);
+                    }
+                    if(!serializingScalarValue)
+                        writer.WriteEndObject();
+                }                
                 if(value != null) OnAfterObjectSerialization?.Invoke(value);
             }
         }
@@ -465,6 +478,9 @@ namespace Microsoft.Kiota.Serialization.Json
                 case IEnumerable<object> coll:
                     WriteCollectionOfPrimitiveValues(key, coll);
                     break;
+                case UntypedNode node:
+                    WriteUntypedValue(key, node);
+                    break;
                 case IParsable parseable:
                     WriteObjectValue(key, parseable);
                     break;
@@ -514,6 +530,81 @@ namespace Microsoft.Kiota.Serialization.Json
                 return attribute.Value;
 
             return name.ToFirstCharacterLowerCase();
+        }
+        /// <summary>
+        /// Writes a untyped value for the specified key.
+        /// </summary>
+        /// <param name="key">The key to be used for the written value. May be null.</param>
+        /// <param name="value">The untyped node.</param>
+        private void WriteUntypedValue(string? key, UntypedNode? value)
+        {
+            switch(value)
+            {
+                case UntypedString untypedString:
+                    WriteStringValue(key, untypedString.GetValue());
+                    break;
+                case UntypedBoolean untypedBoolean:
+                    WriteBoolValue(key, untypedBoolean.GetValue());
+                    break;
+                case UntypedInteger untypedInteger:
+                    WriteIntValue(key, untypedInteger.GetValue());
+                    break;
+                case UntypedLong untypedLong:
+                    WriteLongValue(key, untypedLong.GetValue());
+                    break;
+                case UntypedDecimal untypedDecimal:
+                    WriteDecimalValue(key, untypedDecimal.GetValue());
+                    break;
+                case UntypedFloat untypedFloat:
+                    WriteFloatValue(key, untypedFloat.GetValue());
+                    break;
+                case UntypedDouble untypedDouble:
+                    WriteDoubleValue(key, untypedDouble.GetValue());
+                    break;
+                case UntypedObject untypedObject:
+                    WriteUntypedObject(key, untypedObject);
+                    break;
+                case UntypedArray array:
+                    WriteUntypedArray(key, array);
+                    break;
+                case UntypedNull:
+                    WriteNullValue(key);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Write a untyped object for the specified key.
+        /// </summary>
+        /// <param name="key">The key to be used for the written value. May be null.</param>
+        /// <param name="value">The untyped object.</param>
+        private void WriteUntypedObject(string? key, UntypedObject? value)
+        {
+            if (value != null)
+            {
+                if(!string.IsNullOrEmpty(key)) writer.WritePropertyName(key!);
+                writer.WriteStartObject();
+                foreach(var item in value.GetValue())
+                    WriteUntypedValue(item.Key, item.Value);
+                writer.WriteEndObject();
+            }
+        }
+
+        /// <summary>
+        /// Writes the specified collection of untyped values.
+        /// </summary>
+        /// <param name="key">The key to be used for the written value. May be null.</param>
+        /// <param name="array">The collection of untyped values.</param>
+        private void WriteUntypedArray(string? key, UntypedArray? array)
+        {
+            if (array != null)
+            {
+                if(!string.IsNullOrEmpty(key)) writer.WritePropertyName(key!);
+                writer.WriteStartArray();
+                foreach(var item in array.GetValue())
+                    WriteUntypedValue(null, item);
+                writer.WriteEndArray();
+            }
         }
     }
 }

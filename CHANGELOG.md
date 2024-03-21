@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2024-03-22
+
+### Added
+
+- Added support for untyped nodes. (https://github.com/microsoft/kiota-serialization-json-dotnet/issues/197)
+
 ## [1.1.8] - 2024-02-27
 
 - Reduced `DynamicallyAccessedMembers` scope for enum methods to prevent ILC warnings.
