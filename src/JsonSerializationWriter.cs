@@ -540,32 +540,32 @@ namespace Microsoft.Kiota.Serialization.Json
         {
             switch(value)
             {
-                case UntypedString:
-                    WriteStringValue(key, ((UntypedString)value).GetValue());
+                case UntypedString untypedString:
+                    WriteStringValue(key, untypedString.GetValue());
                     break;
-                case UntypedBoolean:
-                    WriteBoolValue(key, ((UntypedBoolean)value).GetValue());
+                case UntypedBoolean untypedBoolean:
+                    WriteBoolValue(key, untypedBoolean.GetValue());
                     break;
-                case UntypedInteger:
-                    WriteIntValue(key, ((UntypedInteger)value).GetValue());
+                case UntypedInteger untypedInteger:
+                    WriteIntValue(key, untypedInteger.GetValue());
                     break;
-                case UntypedLong:
-                    WriteLongValue(key, ((UntypedLong)value).GetValue());
+                case UntypedLong untypedLong:
+                    WriteLongValue(key, untypedLong.GetValue());
                     break;
-                case UntypedDecimal:
-                    WriteDecimalValue(key, ((UntypedDecimal)value).GetValue());
+                case UntypedDecimal untypedDecimal:
+                    WriteDecimalValue(key, untypedDecimal.GetValue());
                     break;
-                case UntypedFloat:
-                    WriteFloatValue(key, ((UntypedFloat)value).GetValue());
+                case UntypedFloat untypedFloat:
+                    WriteFloatValue(key, untypedFloat.GetValue());
                     break;
-                case UntypedDouble:
-                    WriteDoubleValue(key, ((UntypedDouble)value).GetValue());
+                case UntypedDouble untypedDouble:
+                    WriteDoubleValue(key, untypedDouble.GetValue());
                     break;
-                case UntypedObject:
-                    WriteUntypedObject(key, (UntypedObject)value);
+                case UntypedObject untypedObject:
+                    WriteUntypedObject(key, untypedObject);
                     break;
-                case UntypedArray:
-                    WriteUntypedArray(key, (UntypedArray)value);
+                case UntypedArray array:
+                    WriteUntypedArray(key, array);
                     break;
                 case UntypedNull:
                     WriteNullValue(key);
