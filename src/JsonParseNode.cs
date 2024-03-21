@@ -13,6 +13,7 @@ using System.Xml;
 using Microsoft.Kiota.Abstractions.Serialization;
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Abstractions.Extensions;
+
 #if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
 #endif
@@ -277,6 +278,12 @@ namespace Microsoft.Kiota.Serialization.Json
                 return null;
             return Convert.FromBase64String(rawValue);
         }
+        /// <summary>
+        /// Gets the untyped value of the node
+        /// </summary>
+        /// <returns>The untyped value of the node.</returns>
+        private UntypedNode? GetUntypedValue() => GetUntypedValue(_jsonNode);
+
 
         /// <summary>
         /// Get the collection of primitives of type <typeparam name="T"/>from the json node
@@ -326,6 +333,111 @@ namespace Microsoft.Kiota.Serialization.Json
         }
 
         /// <summary>
+        /// Gets the collection of untyped values of the node.
+        /// </summary>
+        /// <returns>The collection of untyped values.</returns>
+        private IEnumerable<UntypedNode> GetCollectionOfUntypedValues(JsonElement jsonNode)
+        {
+            if (jsonNode.ValueKind == JsonValueKind.Array)
+            {
+                foreach(var collectionValue in jsonNode.EnumerateArray())
+                {
+                    var currentParseNode = new JsonParseNode(collectionValue)
+                    {
+                        OnBeforeAssignFieldValues = OnBeforeAssignFieldValues,
+                        OnAfterAssignFieldValues = OnAfterAssignFieldValues
+                    };
+                    yield return currentParseNode.GetUntypedValue()!;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the collection of properties in the untyped object.
+        /// </summary>
+        /// <returns>The collection of properties in the untyped object.</returns>
+        private IDictionary<string, UntypedNode> GetPropertiesOfUntypedObject(JsonElement jsonNode)
+        {
+            var properties = new Dictionary<string, UntypedNode>();
+            if(jsonNode.ValueKind == JsonValueKind.Object)
+            {
+                foreach(var objectValue in jsonNode.EnumerateObject())
+                {
+                    JsonElement property = objectValue.Value;
+                    if(objectValue.Value.ValueKind == JsonValueKind.Object)
+                    {
+                        var childNode = new JsonParseNode(objectValue.Value)
+                        {
+                            OnBeforeAssignFieldValues = OnBeforeAssignFieldValues,
+                            OnAfterAssignFieldValues = OnAfterAssignFieldValues
+                        };
+                        var objectVal = childNode.GetPropertiesOfUntypedObject(childNode._jsonNode);
+                        properties[objectValue.Name] = new UntypedObject(objectVal);
+                    }
+                    else
+                    {
+                        properties[objectValue.Name] = GetUntypedValue(property)!;
+                    }
+                }
+            }
+            return properties;
+        }
+
+        private UntypedNode? GetUntypedValue(JsonElement jsonNode)
+        {
+            UntypedNode? untypedNode = null;
+            switch(jsonNode.ValueKind)
+            {
+                case JsonValueKind.Number:
+                    if(jsonNode.TryGetInt32(out var intValue))
+                    {
+                        untypedNode = new UntypedInteger(intValue);
+                    }
+                    else if(jsonNode.TryGetInt64(out var longValue))
+                    {
+                        untypedNode = new UntypedLong(longValue);
+                    }
+                    else if(jsonNode.TryGetDecimal(out var decimalValue))
+                    {
+                        untypedNode = new UntypedDecimal(decimalValue);
+                    }
+                    else if(jsonNode.TryGetSingle(out var floatValue))
+                    {
+                        untypedNode = new UntypedFloat(floatValue);
+                    }
+                    else if(jsonNode.TryGetDouble(out var doubleValue))
+                    {
+                        untypedNode = new UntypedDouble(doubleValue);
+                    }
+                    else throw new InvalidOperationException("unexpected additional value type during number deserialization");
+                    break;
+                case JsonValueKind.String:
+                    var stringValue = jsonNode.GetString();
+                    untypedNode = new UntypedString(stringValue);
+                    break;
+                case JsonValueKind.True:
+                case JsonValueKind.False:
+                    var boolValue = jsonNode.GetBoolean();
+                    untypedNode = new UntypedBoolean(boolValue);
+                    break;
+                case JsonValueKind.Array:
+                    var arrayValue = GetCollectionOfUntypedValues(jsonNode);
+                    untypedNode = new UntypedArray(arrayValue);
+                    break;
+                case JsonValueKind.Object:
+                    var objectValue = GetPropertiesOfUntypedObject(jsonNode);
+                    untypedNode = new UntypedObject(objectValue);
+                    break;
+                case JsonValueKind.Null:
+                case JsonValueKind.Undefined:
+                    untypedNode = new UntypedNull();
+                    break;
+            }
+
+            return untypedNode;
+        }
+
+        /// <summary>
         /// The action to perform before assigning field values.
         /// </summary>
         public Action<IParsable>? OnBeforeAssignFieldValues { get; set; }
@@ -342,6 +454,12 @@ namespace Microsoft.Kiota.Serialization.Json
         /// <returns>A object of the specified type</returns>
         public T GetObjectValue<T>(ParsableFactory<T> factory) where T : IParsable
         {
+            // until interface exposes GetUntypedValue()
+            var genericType = typeof(T);
+            if(genericType == typeof(UntypedNode))
+            {
+                return (T)(object)GetUntypedValue()!;
+            }
             var item = factory(this);
             OnBeforeAssignFieldValues?.Invoke(item);
             AssignFieldValues(item);
@@ -385,7 +503,7 @@ namespace Microsoft.Kiota.Serialization.Json
                 }
             }
         }
-        private static object? TryGetAnything(JsonElement element)
+        private object? TryGetAnything(JsonElement element)
         {
             switch(element.ValueKind)
             {
@@ -407,7 +525,7 @@ namespace Microsoft.Kiota.Serialization.Json
                     else return element.GetString();
                 case JsonValueKind.Array:
                 case JsonValueKind.Object:
-                    return element;
+                    return GetUntypedValue(element);
                 case JsonValueKind.True:
                     return true;
                 case JsonValueKind.False:
