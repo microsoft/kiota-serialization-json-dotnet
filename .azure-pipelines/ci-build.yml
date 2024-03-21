@@ -240,8 +240,8 @@ extends:
                       filePath: $(Pipeline.Workspace)\scripts\GetNugetPackageVersion.ps1
                       pwsh: true
                       arguments: '-packageDirPath "$(Pipeline.Workspace)/"'
-                  - task: NuGetCommand@2
-                    displayName: 'NuGet push'
+                  - task: 1ES.PublishNuget@1
+                    displayName: 'Push release to NuGet.org'
                     inputs:
                       command: push
                       packagesToPush: '$(Pipeline.Workspace)/Microsoft.Kiota.Serialization.Json.*.nupkg'
