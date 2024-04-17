@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Have System.Text.Json only included on Net Standard's TFM
+- Have made System.Text.Json only be included on Net Standard's TFM & net 5
 
 ## [1.2.0] - 2024-03-22
 
