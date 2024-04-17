@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2024-04-17
+
+### Changed
+
+- Have System.Text.Json only included on Net Standard's TFM
+
 ## [1.2.0] - 2024-03-22
 
 ### Added
