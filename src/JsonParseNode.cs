@@ -133,8 +133,7 @@ namespace Microsoft.Kiota.Serialization.Json
             if(_jsonNode.TryGetGuid(out var guid))
                 return guid;
 
-            var guidStr = _jsonNode.GetString();
-            if(string.IsNullOrEmpty(guidStr))
+            if(string.IsNullOrEmpty(_jsonNode.GetString()))
                 return null;
 
             return _jsonNode.Deserialize(_jsonSerializerContext.Guid);
