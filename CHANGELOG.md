@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.3] - 2024-04-25
+
+### Changed
+
+- Parse empty strings as nullable Guid
+
 ## [1.2.2] - 2024-04-19
 
 ### Changed

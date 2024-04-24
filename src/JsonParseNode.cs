@@ -125,9 +125,19 @@ namespace Microsoft.Kiota.Serialization.Json
         /// Get the guid value from the json node
         /// </summary>
         /// <returns>A guid value</returns>
-        public Guid? GetGuidValue() => _jsonNode.ValueKind == JsonValueKind.String 
-            ? _jsonNode.Deserialize(_jsonSerializerContext.Guid)
-            : null;
+        public Guid? GetGuidValue()
+        {
+            if(_jsonNode.ValueKind != JsonValueKind.String)
+                return null;
+
+            if(_jsonNode.TryGetGuid(out var guid))
+                return guid;
+
+            if(string.IsNullOrEmpty(_jsonNode.GetString()))
+                return null;
+
+            return _jsonNode.Deserialize(_jsonSerializerContext.Guid);
+        }
 
         /// <summary>
         /// Get the <see cref="DateTimeOffset"/> value from the json node

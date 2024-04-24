@@ -221,6 +221,23 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
         }
 
         [Fact]
+        public void ParseGuidEmptyString()
+        {
+            // Arrange
+            var json = $"{{\"id\": \"\"}}";
+            var serializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.General);
+            var serializationContext = new KiotaJsonSerializationContext(serializerOptions);
+            using var jsonDocument = JsonDocument.Parse(json);
+            var rootParseNode = new JsonParseNode(jsonDocument.RootElement, serializationContext);
+
+            // Act
+            var entity = rootParseNode.GetObjectValue(_ => new ConverterTestEntity());
+
+            // Assert
+            Assert.Null(entity.Id);
+        }
+
+        [Fact]
         public void GetEntityWithUntypedNodesFromJson()
         {
             // Arrange
