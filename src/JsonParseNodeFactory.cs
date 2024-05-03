@@ -76,7 +76,7 @@ namespace Microsoft.Kiota.Serialization.Json
 
             _ = content ?? throw new ArgumentNullException(nameof(content));
 
-            using var jsonDocument = await JsonDocument.ParseAsync(content);
+            using var jsonDocument = await JsonDocument.ParseAsync(content, cancellationToken: cancellationToken);
             return new JsonParseNode(jsonDocument.RootElement.Clone(), _jsonJsonSerializationContext);
         }
     }
