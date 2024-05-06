@@ -99,6 +99,7 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
                                             "        }\r\n" +
                                             "    ],\r\n" +
                                             "    \"detail\": null,\r\n" +
+                                            "    \"table\": [[1,2,3],[4,5,6],[7,8,9]],\r\n" +
                                             "    \"extra\": {\r\n" +
                                             "        \"createdDateTime\":\"2024-01-15T00:00:00\\u002B00:00\"\r\n" +
                                             "    }\r\n" +
@@ -273,6 +274,18 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
             Assert.Null(entity.Detail);
             var extra = entity.AdditionalData["extra"];
             Assert.NotNull(extra);
+            Assert.NotNull(entity.Table);
+            var table = (UntypedArray)entity.Table;// the table is a collection
+            foreach(var value in table.GetValue())
+            {
+                var row = (UntypedArray)value;
+                Assert.NotNull(row);// The values are a nested collection
+                foreach(var item in row.GetValue())
+                {
+                    var rowItem = (UntypedInteger)item;
+                    Assert.NotNull(rowItem);// The values are a nested collection
+                }
+            }
         }
     }
 }
