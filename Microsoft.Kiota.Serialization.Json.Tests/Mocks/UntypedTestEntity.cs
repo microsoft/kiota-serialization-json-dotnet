@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections.Generic;
 using Microsoft.Kiota.Abstractions.Serialization;
@@ -14,6 +14,7 @@ public class UntypedTestEntity : IParsable, IAdditionalDataHolder
     public UntypedNode Location { get; set; }
     public UntypedNode Keywords { get; set; }
     public UntypedNode Detail { get; set; }
+    public UntypedNode Table { get; set; }
     public UntypedTestEntity()
     {
         AdditionalData = new Dictionary<string, object>();
@@ -27,7 +28,8 @@ public class UntypedTestEntity : IParsable, IAdditionalDataHolder
             { "title", node => Title = node.GetStringValue() },
             { "location", node => Location = node.GetObjectValue(UntypedNode.CreateFromDiscriminatorValue) },
             { "keywords", node => Keywords = node.GetObjectValue(UntypedNode.CreateFromDiscriminatorValue) },
-            { "detail", node => Detail = node.GetObjectValue(UntypedNode.CreateFromDiscriminatorValue) }
+            { "detail", node => Detail = node.GetObjectValue(UntypedNode.CreateFromDiscriminatorValue) },
+            { "table", node => Table = node.GetObjectValue(UntypedNode.CreateFromDiscriminatorValue) },
         };
     }
     public void Serialize(ISerializationWriter writer)
@@ -37,6 +39,7 @@ public class UntypedTestEntity : IParsable, IAdditionalDataHolder
         writer.WriteObjectValue("location", Location);
         writer.WriteObjectValue("keywords", Keywords);
         writer.WriteObjectValue("detail", Detail);
+        writer.WriteObjectValue("table", Table);
         writer.WriteAdditionalData(AdditionalData);
     }
     public static UntypedTestEntity CreateFromDiscriminatorValue(IParseNode parseNode)
