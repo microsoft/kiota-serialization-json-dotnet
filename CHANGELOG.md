@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Implements IAsyncParseNodeFactory interface which adds async support
+- Implements IAsyncParseNodeFactory interface which adds async support 
 
 ## [1.2.3] - 2024-04-25
 
