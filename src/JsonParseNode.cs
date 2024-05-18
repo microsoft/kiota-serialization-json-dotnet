@@ -224,12 +224,21 @@ namespace Microsoft.Kiota.Serialization.Json
             rawValue = ToEnumRawName<T>(rawValue!);
             if(type.GetCustomAttributes<FlagsAttribute>().Any())
             {
-                return (T)(object)rawValue!
-                    .Split(',')
-                    .Select(x => Enum.TryParse<T>(x, true, out var result) ? result : (T?)null)
-                    .Where(x => !x.Equals(null))
-                    .Select(x => (int)(object)x!)
-                    .Sum();
+                ReadOnlySpan<char> valueSpan = rawValue.AsSpan();
+                int value = 0;
+                while(valueSpan.Length > 0)
+                {
+                    int commaIndex = valueSpan.IndexOf(',');
+                    ReadOnlySpan<char> valueNameSpan = commaIndex < 0 ? valueSpan : valueSpan.Slice(0, commaIndex);
+#if NET6_0_OR_GREATER
+                    if(Enum.TryParse<T>(valueNameSpan, true, out var result))
+#else
+                    if(Enum.TryParse<T>(valueNameSpan.ToString(), true, out var result))
+#endif
+                        value |= (int)(object)result;
+                    valueSpan = commaIndex < 0 ? ReadOnlySpan<char>.Empty : valueSpan.Slice(commaIndex + 1);
+                }
+                return (T)(object)value;
             }
             else
                 return Enum.TryParse<T>(rawValue, true,out var result) ? result : null;
