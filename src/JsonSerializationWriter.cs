@@ -13,6 +13,8 @@ using System.Runtime.Serialization;
 using Microsoft.Kiota.Abstractions.Extensions;
 using Microsoft.Kiota.Abstractions;
 using System.Xml;
+using System.Text;
+
 #if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
 #endif
@@ -278,16 +280,25 @@ namespace Microsoft.Kiota.Serialization.Json
             if(value.HasValue)
             {
                 if(typeof(T).GetCustomAttributes<FlagsAttribute>().Any())
-                    WriteStringValue(null,
+                {
+                    var values =
 #if NET5_0_OR_GREATER
-                        Enum.GetValues<T>()
+                        Enum.GetValues<T>();
 #else
-                        Enum.GetValues(typeof(T))
-                            .Cast<T>()
+                        Enum.GetValues(typeof(T)).Cast<T>();
 #endif
-                            .Where(x => value.Value.HasFlag(x))
-                            .Select(GetEnumName)
-                            .Aggregate((x, y) => $"{x},{y}"));
+                    StringBuilder valueNames = new StringBuilder();
+                    foreach (var x in values)
+                    {
+                        if(value.Value.HasFlag(x) && GetEnumName(x) is string valueName)
+                        {
+                            if (valueNames.Length > 0)
+                                valueNames.Append(",");
+                            valueNames.Append(valueName);
+                        }
+                    }
+                    WriteStringValue(null, valueNames.ToString());
+                }
                 else WriteStringValue(null, GetEnumName(value.Value));
             }
         }
