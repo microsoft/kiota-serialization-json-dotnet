@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.0] - 2024-05-13
 
+### Changed
+
+- Updated serialization and deserialization of enums to remove LINQ to resolve NativeAOT compatibility issue
+
 ### Added
 
 - Implements IAsyncParseNodeFactory interface which adds async support 
