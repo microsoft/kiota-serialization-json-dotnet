@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Microsoft.Kiota.Serialization.Json.Tests
@@ -16,10 +17,10 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
         }
 
         [Fact]
-        public void GetsWriterForJsonContentType()
+        public async Task GetsWriterForJsonContentType()
         {
             using var jsonStream = new MemoryStream(Encoding.UTF8.GetBytes(TestJsonString));
-            var jsonWriter = _jsonParseNodeFactory.GetRootParseNode(_jsonParseNodeFactory.ValidContentType,jsonStream);
+            var jsonWriter = await _jsonParseNodeFactory.GetRootParseNodeAsync(_jsonParseNodeFactory.ValidContentType,jsonStream);
 
             // Assert
             Assert.NotNull(jsonWriter);
@@ -27,11 +28,11 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
         }
 
         [Fact]
-        public void ThrowsArgumentOutOfRangeExceptionForInvalidContentType()
+        public async Task ThrowsArgumentOutOfRangeExceptionForInvalidContentType()
         {
             var streamContentType = "application/octet-stream";
             using var jsonStream = new MemoryStream(Encoding.UTF8.GetBytes(TestJsonString));
-            var exception = Assert.Throws<ArgumentOutOfRangeException>(() => _jsonParseNodeFactory.GetRootParseNode(streamContentType,jsonStream));
+            var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _jsonParseNodeFactory.GetRootParseNodeAsync(streamContentType,jsonStream));
 
             // Assert
             Assert.NotNull(exception);
@@ -41,10 +42,10 @@ namespace Microsoft.Kiota.Serialization.Json.Tests
         [Theory]
         [InlineData(null)]
         [InlineData("")]
-        public void ThrowsArgumentNullExceptionForNoContentType(string contentType)
+        public async Task ThrowsArgumentNullExceptionForNoContentType(string contentType)
         {
             using var jsonStream = new MemoryStream(Encoding.UTF8.GetBytes(TestJsonString));
-            var exception = Assert.Throws<ArgumentNullException>(() => _jsonParseNodeFactory.GetRootParseNode(contentType,jsonStream));
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(async () => await _jsonParseNodeFactory.GetRootParseNodeAsync(contentType,jsonStream));
 
             // Assert
             Assert.NotNull(exception);

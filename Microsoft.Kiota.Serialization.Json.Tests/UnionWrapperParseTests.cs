@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Kiota.Serialization.Json.Tests.Mocks;
 using Xunit;
 
@@ -11,11 +12,11 @@ public class UnionWrapperParseTests {
     private readonly JsonSerializationWriterFactory _serializationWriterFactory = new();
     private const string contentType = "application/json";
     [Fact]
-    public void ParsesUnionTypeComplexProperty1()
+    public async Task ParsesUnionTypeComplexProperty1()
     {
         // Given
         using var payload = new MemoryStream(Encoding.UTF8.GetBytes("{\"@odata.type\":\"#microsoft.graph.testEntity\",\"officeLocation\":\"Montreal\", \"id\": \"opaque\"}"));
-        var parseNode = _parseNodeFactory.GetRootParseNode(contentType, payload);
+        var parseNode = await _parseNodeFactory.GetRootParseNodeAsync(contentType, payload);
     
         // When
         var result = parseNode.GetObjectValue<UnionTypeMock>(UnionTypeMock.CreateFromDiscriminator);
@@ -29,11 +30,11 @@ public class UnionWrapperParseTests {
         Assert.Equal("opaque", result.ComposedType1.Id);
     }
     [Fact]
-    public void ParsesUnionTypeComplexProperty2()
+    public async Task ParsesUnionTypeComplexProperty2()
     {
         // Given
         using var payload = new MemoryStream(Encoding.UTF8.GetBytes("{\"@odata.type\":\"#microsoft.graph.secondTestEntity\",\"officeLocation\":\"Montreal\", \"id\": 10}"));
-        var parseNode = _parseNodeFactory.GetRootParseNode(contentType, payload);
+        var parseNode = await _parseNodeFactory.GetRootParseNodeAsync(contentType, payload);
     
         // When
         var result = parseNode.GetObjectValue<UnionTypeMock>(UnionTypeMock.CreateFromDiscriminator);
@@ -47,11 +48,11 @@ public class UnionWrapperParseTests {
         Assert.Equal(10, result.ComposedType2.Id);
     }
     [Fact]
-    public void ParsesUnionTypeComplexProperty3()
+    public async Task ParsesUnionTypeComplexProperty3()
     {
         // Given
         using var payload = new MemoryStream(Encoding.UTF8.GetBytes("[{\"@odata.type\":\"#microsoft.graph.TestEntity\",\"officeLocation\":\"Ottawa\", \"id\": \"11\"}, {\"@odata.type\":\"#microsoft.graph.TestEntity\",\"officeLocation\":\"Montreal\", \"id\": \"10\"}]"));
-        var parseNode = _parseNodeFactory.GetRootParseNode(contentType, payload);
+        var parseNode = await _parseNodeFactory.GetRootParseNodeAsync(contentType, payload);
     
         // When
         var result = parseNode.GetObjectValue<UnionTypeMock>(UnionTypeMock.CreateFromDiscriminator);
@@ -63,14 +64,14 @@ public class UnionWrapperParseTests {
         Assert.Null(result.ComposedType1);
         Assert.Null(result.StringValue);
         Assert.Equal(2, result.ComposedType3.Count);
-        Assert.Equal("11", result.ComposedType3.First().Id);
+        Assert.Equal("11", result.ComposedType3[0].Id);
     }
     [Fact]
-    public void ParsesUnionTypeStringValue()
+    public async Task ParsesUnionTypeStringValue()
     {
         // Given
         using var payload = new MemoryStream(Encoding.UTF8.GetBytes("\"officeLocation\""));
-        var parseNode = _parseNodeFactory.GetRootParseNode(contentType, payload);
+        var parseNode = await _parseNodeFactory.GetRootParseNodeAsync(contentType, payload);
     
         // When
         var result = parseNode.GetObjectValue<UnionTypeMock>(UnionTypeMock.CreateFromDiscriminator);

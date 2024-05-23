@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Kiota.Serialization.Json.Tests.Mocks;
 using Xunit;
 
@@ -11,11 +12,11 @@ public class IntersectionWrapperParseTests {
     private readonly JsonSerializationWriterFactory _serializationWriterFactory = new();
     private const string contentType = "application/json";
     [Fact]
-    public void ParsesIntersectionTypeComplexProperty1()
+    public async Task ParsesIntersectionTypeComplexProperty1()
     {
         // Given
         using var payload = new MemoryStream(Encoding.UTF8.GetBytes("{\"displayName\":\"McGill\",\"officeLocation\":\"Montreal\", \"id\": \"opaque\"}"));
-        var parseNode = _parseNodeFactory.GetRootParseNode(contentType, payload);
+        var parseNode = await _parseNodeFactory.GetRootParseNodeAsync(contentType, payload);
     
         // When
         var result = parseNode.GetObjectValue<IntersectionTypeMock>(IntersectionTypeMock.CreateFromDiscriminator);
@@ -30,11 +31,11 @@ public class IntersectionWrapperParseTests {
         Assert.Equal("McGill", result.ComposedType2.DisplayName);
     }
     [Fact]
-    public void ParsesIntersectionTypeComplexProperty2()
+    public async Task ParsesIntersectionTypeComplexProperty2()
     {
         // Given
         using var payload = new MemoryStream(Encoding.UTF8.GetBytes("{\"displayName\":\"McGill\",\"officeLocation\":\"Montreal\", \"id\": 10}"));
-        var parseNode = _parseNodeFactory.GetRootParseNode(contentType, payload);
+        var parseNode = await _parseNodeFactory.GetRootParseNodeAsync(contentType, payload);
     
         // When
         var result = parseNode.GetObjectValue<IntersectionTypeMock>(IntersectionTypeMock.CreateFromDiscriminator);
@@ -50,11 +51,11 @@ public class IntersectionWrapperParseTests {
         Assert.Equal("McGill", result.ComposedType2.DisplayName);
     }
     [Fact]
-    public void ParsesIntersectionTypeComplexProperty3()
+    public async Task ParsesIntersectionTypeComplexProperty3()
     {
         // Given
         using var payload = new MemoryStream(Encoding.UTF8.GetBytes("[{\"@odata.type\":\"#microsoft.graph.TestEntity\",\"officeLocation\":\"Ottawa\", \"id\": \"11\"}, {\"@odata.type\":\"#microsoft.graph.TestEntity\",\"officeLocation\":\"Montreal\", \"id\": \"10\"}]"));
-        var parseNode = _parseNodeFactory.GetRootParseNode(contentType, payload);
+        var parseNode = await _parseNodeFactory.GetRootParseNodeAsync(contentType, payload);
     
         // When
         var result = parseNode.GetObjectValue<IntersectionTypeMock>(IntersectionTypeMock.CreateFromDiscriminator);
@@ -69,11 +70,11 @@ public class IntersectionWrapperParseTests {
         Assert.Equal("Ottawa", result.ComposedType3.First().OfficeLocation);
     }
     [Fact]
-    public void ParsesIntersectionTypeStringValue()
+    public async Task ParsesIntersectionTypeStringValue()
     {
         // Given
         using var payload = new MemoryStream(Encoding.UTF8.GetBytes("\"officeLocation\""));
-        var parseNode = _parseNodeFactory.GetRootParseNode(contentType, payload);
+        var parseNode = await _parseNodeFactory.GetRootParseNodeAsync(contentType, payload);
     
         // When
         var result = parseNode.GetObjectValue<IntersectionTypeMock>(IntersectionTypeMock.CreateFromDiscriminator);
