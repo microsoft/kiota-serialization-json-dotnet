@@ -3,7 +3,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
@@ -222,7 +221,7 @@ namespace Microsoft.Kiota.Serialization.Json
             
             var type = typeof(T);
             rawValue = ToEnumRawName<T>(rawValue!);
-            if(type.GetCustomAttributes<FlagsAttribute>().Any())
+            if (typeof(T).IsDefined(typeof(FlagsAttribute)))
             {
                 ReadOnlySpan<char> valueSpan = rawValue.AsSpan();
                 int value = 0;
@@ -582,10 +581,14 @@ namespace Microsoft.Kiota.Serialization.Json
         private static string ToEnumRawName<T>(string value) where T : struct, Enum
 #endif
         {
-            if (typeof(T).GetFields().FirstOrDefault(member =>
-                   member.GetCustomAttribute<EnumMemberAttribute>() is { } attr &&
-                   value.Equals(attr.Value, StringComparison.Ordinal))?.Name is { } strValue)
-                return strValue;
+            foreach (var field in typeof(T).GetFields())
+            {
+                var attr = field.GetCustomAttribute<EnumMemberAttribute>();
+                if (attr != null && value.Equals(attr.Value, StringComparison.Ordinal))
+                {
+                    return field.Name;
+                }
+            }
 
             return value;
         }
