@@ -583,8 +583,7 @@ namespace Microsoft.Kiota.Serialization.Json
         {
             foreach (var field in typeof(T).GetFields())
             {
-                var attr = field.GetCustomAttribute<EnumMemberAttribute>();
-                if (attr != null && value.Equals(attr.Value, StringComparison.Ordinal))
+                if (field.GetCustomAttribute<EnumMemberAttribute>() is {} attr && value.Equals(attr.Value, StringComparison.Ordinal))
                 {
                     return field.Name;
                 }
