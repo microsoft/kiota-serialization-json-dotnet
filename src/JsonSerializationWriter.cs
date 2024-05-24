@@ -378,15 +378,8 @@ namespace Microsoft.Kiota.Serialization.Json
         /// <param name="additionalValuesToMerge">The additional values to merge to the main value when serializing an intersection wrapper.</param>
         public void WriteObjectValue<T>(string? key, T? value, params IParsable?[] additionalValuesToMerge) where T : IParsable
         {
-            List<IParsable> filteredAdditionalValuesToMerge = new List<IParsable>();
-            foreach (var item in additionalValuesToMerge)
-            {
-                if (item is IParsable parsable)
-                {
-                    filteredAdditionalValuesToMerge.Add(parsable);
-                }
-            }
-            if(value != null || filteredAdditionalValuesToMerge.Count > 0)
+            var filteredAdditionalValuesToMerge = (IParsable[])Array.FindAll(additionalValuesToMerge, static x => x is not null);
+            if(value != null || filteredAdditionalValuesToMerge.Length > 0)
             {
                 // until interface exposes WriteUntypedValue()
                 var serializingUntypedNode = value is UntypedNode;
