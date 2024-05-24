@@ -3,7 +3,6 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.IO;
 using System.Text.Json;
 using Microsoft.Kiota.Abstractions.Serialization;
@@ -279,13 +278,13 @@ namespace Microsoft.Kiota.Serialization.Json
                 writer.WritePropertyName(key!);
             if(value.HasValue)
             {
-                if(typeof(T).GetCustomAttributes<FlagsAttribute>().Any())
+                if (typeof(T).IsDefined(typeof(FlagsAttribute)))
                 {
                     var values =
 #if NET5_0_OR_GREATER
                         Enum.GetValues<T>();
 #else
-                        Enum.GetValues(typeof(T)).Cast<T>();
+                        (T[])Enum.GetValues(typeof(T));
 #endif
                     StringBuilder valueNames = new StringBuilder();
                     foreach (var x in values)
@@ -379,7 +378,7 @@ namespace Microsoft.Kiota.Serialization.Json
         /// <param name="additionalValuesToMerge">The additional values to merge to the main value when serializing an intersection wrapper.</param>
         public void WriteObjectValue<T>(string? key, T? value, params IParsable?[] additionalValuesToMerge) where T : IParsable
         {
-            var filteredAdditionalValuesToMerge = additionalValuesToMerge.OfType<IParsable>().ToArray();
+            var filteredAdditionalValuesToMerge = (IParsable[])Array.FindAll(additionalValuesToMerge, static x => x is not null);
             if(value != null || filteredAdditionalValuesToMerge.Length > 0)
             {
                 // until interface exposes WriteUntypedValue()
