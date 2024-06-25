@@ -218,8 +218,7 @@ namespace Microsoft.Kiota.Serialization.Json
         {
             var rawValue = _jsonNode.GetString();
             if(string.IsNullOrEmpty(rawValue)) return null;
-            
-            var type = typeof(T);
+
             rawValue = ToEnumRawName<T>(rawValue!);
             if (typeof(T).IsDefined(typeof(FlagsAttribute)))
             {
@@ -240,7 +239,7 @@ namespace Microsoft.Kiota.Serialization.Json
                 return (T)(object)value;
             }
             else
-                return Enum.TryParse<T>(rawValue, true,out var result) ? result : null;
+                return Enum.TryParse<T>(rawValue, true, out var result) ? result : null;
         }
 
         /// <summary>
