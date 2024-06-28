@@ -8,7 +8,6 @@ namespace Microsoft.Kiota.Serialization.Json;
 /// Json serialization context for Kiota.
 /// </summary>
 [JsonSerializable(typeof(string))]
-[JsonSerializable(typeof(string))]
 [JsonSerializable(typeof(bool))]
 [JsonSerializable(typeof(bool?))]
 [JsonSerializable(typeof(byte))]
